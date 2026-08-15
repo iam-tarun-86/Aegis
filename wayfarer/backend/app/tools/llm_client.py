@@ -387,3 +387,51 @@ While current systems demonstrate significant efficiency, several key hurdles re
         })
     else:
         return "Synthesized analytical summary of key concepts based on retrieved search context."
+
+import instructor
+from openai import OpenAI
+from pydantic import BaseModel
+from typing import Type
+
+def call_llm_json(
+    prompt: str,
+    response_model: Type[BaseModel],
+    system_prompt: str = "You are an expert deep research AI assistant.",
+    llm_config: Optional[Dict[str, Any]] = None,
+    max_tokens: int = 4000
+) -> BaseModel:
+    """
+    Calls the LLM enforcing a strict JSON schema using Instructor + Pydantic.
+    """
+    provider = "local"
+    model = settings.MODEL_NAME
+    api_key = None
+
+    if llm_config:
+        provider = llm_config.get("provider") or "local"
+        model = llm_config.get("model") or settings.MODEL_NAME
+        api_key = llm_config.get("api_key")
+
+    is_cloud = provider == "nvidia"
+    base_url = f"{settings.NVIDIA_BASE_URL.rstrip('/')}" if is_cloud else f"{settings.LLAMA_SERVER_URL.rstrip('/')}"
+    api_key = api_key or settings.NVIDIA_API_KEY or "not-needed" if is_cloud else "sk-local"
+
+    client = instructor.from_openai(
+        OpenAI(base_url=base_url, api_key=api_key)
+    )
+
+    # Use JSON mode for instructor
+    mode = instructor.Mode.JSON
+    if is_cloud:
+        mode = instructor.Mode.JSON_SCHEMA
+
+    return client.chat.completions.create(
+        model=model,
+        response_model=response_model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=max_tokens
+    )
+

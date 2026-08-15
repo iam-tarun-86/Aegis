@@ -259,3 +259,36 @@ Please rewrite/update ONLY the section "{section}" in the report based on the fe
             await websocket.close()
         except Exception:
             pass
+
+from app.db import init_db, save_search, get_searches, delete_search, clear_searches
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
+    logger.info("Database initialized.")
+
+class SearchSaveReq(BaseModel):
+    topic: str
+    rounds: int
+    report: str
+    sources: list
+
+@app.post("/api/history")
+def api_save_history(req: SearchSaveReq):
+    save_search(req.topic, req.rounds, req.report, req.sources)
+    return {"status": "success"}
+
+@app.get("/api/history")
+def api_get_history():
+    return get_searches()
+
+@app.delete("/api/history/{search_id}")
+def api_delete_history(search_id: int):
+    delete_search(search_id)
+    return {"status": "success"}
+
+@app.delete("/api/history")
+def api_clear_history():
+    clear_searches()
+    return {"status": "success"}
+

@@ -1,9 +1,16 @@
 import json
 import logging
+from pydantic import BaseModel, Field
+from typing import Optional
 from app.agents.state import ResearchState
-from app.tools.llm_client import call_llm
+from app.tools.llm_client import call_llm_json
 
 logger = logging.getLogger("wayfarer.critic")
+
+class CriticOutput(BaseModel):
+    sufficient_coverage: bool = Field(description="True if all sub-questions are answered and coverage is sufficient.")
+    reasoning: str = Field(description="Detailed evaluation addressing Coverage, Consistency, Staleness, and remaining gaps.")
+    next_query: Optional[str] = Field(description="Targeted search query for missing information (if coverage is false).", default=None)
 
 def critic_node(state: ResearchState) -> ResearchState:
     topic = state["topic"]
@@ -31,35 +38,22 @@ Evaluate the accumulated findings based on these three criteria:
 1. Coverage: Does the accumulated content answer every sub-question identified?
 2. Consistency: Do sources agree or conflict on key facts? Identify any conflicts.
 3. Staleness: Is any source's information outdated relative to the topic?
-
-Return your response ONLY as valid JSON in this structure:
-{{
-  "sufficient_coverage": true or false,
-  "reasoning": "Detailed evaluation addressing the three criteria (Coverage, Consistency, Staleness) and remaining gaps...",
-  "next_query": "Targeted search query for missing information or resolving conflicts (if sufficient_coverage is false)"
-}}
 """
 
-    response_text = call_llm(prompt, temperature=0.1, llm_config=state.get("llm_config"))
-    
-    sufficient_coverage = False
-    reasoning = "Evaluating round results."
-    next_query = f"{topic} detailed analysis"
-    
     try:
-        clean_text = response_text
-        if "```json" in clean_text:
-            clean_text = clean_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in clean_text:
-            clean_text = clean_text.split("```")[1].split("```")[0].strip()
-            
-        parsed = json.loads(clean_text)
-        sufficient_coverage = parsed.get("sufficient_coverage", False)
-        reasoning = parsed.get("reasoning", "Analyzed round coverage.")
-        next_query = parsed.get("next_query", f"{topic} follow-up")
+        parsed = call_llm_json(
+            prompt=prompt,
+            response_model=CriticOutput,
+            llm_config=state.get("llm_config")
+        )
+        sufficient_coverage = parsed.sufficient_coverage
+        reasoning = parsed.reasoning
+        next_query = parsed.next_query or f"{topic} detailed analysis"
     except Exception as e:
         logger.warning(f"Failed to parse Critic JSON response: {e}")
-        # Rule: Max round check acts as absolute ceiling
+        sufficient_coverage = False
+        reasoning = "Evaluating round results."
+        next_query = f"{topic} detailed analysis"
         if current_round >= max_rounds:
             sufficient_coverage = True
             reasoning = "Max recommended research rounds reached."

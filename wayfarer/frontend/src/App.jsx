@@ -51,16 +51,21 @@ export default function App() {
     }
   }, [isRunning, viewMode]);
 
-  // Load past searches from LocalStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('wayfarer_past_searches');
-    if (saved) {
-      try {
-        setPastSearches(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error loading past searches:', e);
+  // Load past searches from Backend on mount
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/history');
+      if (res.ok) {
+        const data = await res.json();
+        setPastSearches(data);
       }
+    } catch (e) {
+      console.error('Error loading history from DB:', e);
     }
+  };
+
+  useEffect(() => {
+    fetchHistory();
   }, []);
 
   const currentRound = graphState?.current_round || 1;
@@ -76,25 +81,31 @@ export default function App() {
   // Get active node for Three.js animations
   const activeNode = graphState?.logs?.[graphState.logs.length - 1]?.node || '';
 
-  // Watch for completed research runs and save to LocalStorage
+  // Watch for completed research runs and save to Database
   useEffect(() => {
     if (finalReport && !isRunning && graphState?.topic) {
       const newSearch = {
         topic: graphState.topic,
         rounds: graphState.max_rounds,
         report: finalReport,
-        sources: graphState.sources || [],
-        timestamp: new Date().toISOString()
+        sources: graphState.sources || []
       };
       
-      setPastSearches((prev) => {
-        if (prev.some((s) => s.topic.toLowerCase() === newSearch.topic.toLowerCase())) {
-          return prev;
+      const saveToDb = async () => {
+        try {
+          await fetch('http://localhost:8000/api/history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newSearch)
+          });
+          // Refresh list to get real DB IDs
+          fetchHistory();
+        } catch(e) {
+          console.error("Failed to save history", e);
         }
-        const updated = [newSearch, ...prev];
-        localStorage.setItem('wayfarer_past_searches', JSON.stringify(updated));
-        return updated;
-      });
+      };
+      
+      saveToDb();
       setSelectedPastIndex(-1); // Reset selected past index as we have a new active report
     }
   }, [finalReport, isRunning, graphState]);
@@ -105,14 +116,20 @@ export default function App() {
   };
 
   // Handle deleting a past search record
-  const handleDeletePastSearch = (index) => {
-    const updated = pastSearches.filter((_, idx) => idx !== index);
-    setPastSearches(updated);
-    localStorage.setItem('wayfarer_past_searches', JSON.stringify(updated));
-    if (selectedPastIndex === index) {
-      setSelectedPastIndex(-1);
-    } else if (selectedPastIndex > index) {
-      setSelectedPastIndex(selectedPastIndex - 1);
+  const handleDeletePastSearch = async (index) => {
+    const searchId = pastSearches[index].id;
+    try {
+      await fetch(`http://localhost:8000/api/history/${searchId}`, { method: 'DELETE' });
+      const updated = pastSearches.filter((_, idx) => idx !== index);
+      setPastSearches(updated);
+      
+      if (selectedPastIndex === index) {
+        setSelectedPastIndex(-1);
+      } else if (selectedPastIndex > index) {
+        setSelectedPastIndex(selectedPastIndex - 1);
+      }
+    } catch(e) {
+      console.error("Failed to delete", e);
     }
   };
 
@@ -386,10 +403,14 @@ export default function App() {
                 </div>
                 {pastSearches.length > 0 && (
                   <button
-                    onClick={() => {
-                      localStorage.removeItem('wayfarer_past_searches');
-                      setPastSearches([]);
-                      setSelectedPastIndex(-1);
+                    onClick={async () => {
+                      try {
+                        await fetch('http://localhost:8000/api/history', { method: 'DELETE' });
+                        setPastSearches([]);
+                        setSelectedPastIndex(-1);
+                      } catch(e) {
+                        console.error('Failed to clear history', e);
+                      }
                     }}
                     style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '0.75rem', cursor: 'pointer' }}
                   >

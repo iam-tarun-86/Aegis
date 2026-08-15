@@ -1,9 +1,14 @@
-import json
 import logging
+from typing import List
+from pydantic import BaseModel, Field
 from app.agents.state import ResearchState
-from app.tools.llm_client import call_llm
+from app.tools.llm_client import call_llm_json
 
 logger = logging.getLogger("wayfarer.planner")
+
+class PlannerOutput(BaseModel):
+    sub_questions: List[str] = Field(description="3 specific sub-questions to investigate")
+    initial_search_query: str = Field(description="broad search terms for topic")
 
 def planner_node(state: ResearchState) -> ResearchState:
     topic = state["topic"]
@@ -13,33 +18,16 @@ def planner_node(state: ResearchState) -> ResearchState:
 Given the target research topic: "{topic}"
 
 Please break down this topic into 3 specific sub-questions to investigate, and suggest an optimal initial search query.
-Return your response ONLY as valid JSON in the following format:
-{{
-  "sub_questions": [
-    "Sub question 1...",
-    "Sub question 2...",
-    "Sub question 3..."
-  ],
-  "initial_search_query": "broad search terms for topic"
-}}
 """
 
-    response_text = call_llm(prompt, llm_config=state.get("llm_config"))
-    
-    sub_questions = []
-    initial_search_query = topic
-    
     try:
-        # Extract JSON block if wrapped in markdown code blocks
-        clean_text = response_text
-        if "```json" in clean_text:
-            clean_text = clean_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in clean_text:
-            clean_text = clean_text.split("```")[1].split("```")[0].strip()
-            
-        parsed = json.loads(clean_text)
-        sub_questions = parsed.get("sub_questions", [])
-        initial_search_query = parsed.get("initial_search_query", topic)
+        parsed = call_llm_json(
+            prompt=prompt,
+            response_model=PlannerOutput,
+            llm_config=state.get("llm_config")
+        )
+        sub_questions = parsed.sub_questions
+        initial_search_query = parsed.initial_search_query
     except Exception as e:
         logger.warning(f"Failed to parse Planner JSON response: {e}. Using fallback sub-questions.")
         sub_questions = [
