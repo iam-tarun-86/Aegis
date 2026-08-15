@@ -1,0 +1,58 @@
+========================================================================
+PROJECT AEGIS - MASTER CONTEXT FILE
+========================================================================
+This file contains the foundational context, architecture, and current 
+state of Project Aegis. Provide this file to any new AI agent to get 
+them instantly up to speed on the project's vision and constraints.
+
+1. THE VISION
+Project Aegis is the ultimate offline, local-first AI brain. It is the 
+combination of two separate systems:
+- Wayfarer: An autonomous web research agent (LangGraph).
+- DockMind: An offline Document Chat / RAG tool (ChromaDB + SQLite).
+
+2. HARDWARE CONSTRAINTS & LLM
+- The user runs this 100% offline. No cloud APIs allowed.
+- Hardware: 24GB System RAM, RTX 4060 (8GB VRAM).
+- LLM: `Gemma 4 e4b` running locally via `llama.cpp` on Port 8085.
+
+3. THE OMNI ARCHITECTURE (IFRAME APP SHELL)
+CRITICAL RULE: Wayfarer and DockMind must NOT be merged into a single 
+React codebase. Doing so causes Tailwind/Vanilla CSS collisions.
+- They operate as interconnected microservices.
+- The UI is a Master App Shell (`omni_shell` on Port 3001) that contains 
+  a Sidebar.
+- The main view is an Iframe that switches seamlessly between Wayfarer 
+  (Port 3000) and DockMind (Port 5173).
+- Windows Native Startup: The entire system boots via a master 
+  `start_omni.ps1` PowerShell script which launches all 4 local servers 
+  (2 FastAPIs, 2 Vites) safely in the background.
+
+4. THE HANDOFF BRIDGE
+To connect the tools, Wayfarer's frontend has a "Chat with this Research" 
+button. When clicked, it sends a POST request containing the Markdown 
+report directly to DockMind's backend (`localhost:8001/ingest`), and then 
+uses `postMessage` to tell the Omni App Shell to switch the iframe to the 
+Chat tab.
+
+5. THE UPGRADE PATH (PHASED EXECUTION PLAN)
+The following upgrades are planned to maximize robustness:
+- DockMind Ingestion: Upgrade from basic unstructured loaders to `Docling` 
+  (parsing) + `LangExtract` + `Instructor` + `GBNF` (for guaranteed JSON 
+  extraction via local Gemma).
+- DockMind Retrieval: Upgrade ChromaDB to explicitly use `nomic-embed-text` 
+  or `bge-small` instead of `all-MiniLM`.
+- Wayfarer Search: Upgrade from HTML scraping to `duckduckgo-search` API.
+- Wayfarer Scraping: Upgrade to `Docling` + `Playwright` (in Turbo Mode, 
+  blocking images/CSS for speed, but extracting image URLs for the Markdown).
+- Wayfarer Database: Upgrade from browser `LocalStorage` to a backend `SQLite` DB.
+- Wayfarer LangGraph: Enforce JSON outputs using `Instructor` + `GBNF` to 
+  prevent Gemma from hallucinating conversational filler.
+
+6. CURRENT STATUS
+- Phase 1 (Architecture & Isolation) is COMPLETE. 
+  - DockMind backend was safely moved to port 8001 to prevent collisions.
+  - Windows paths were fixed.
+  - `start_omni.ps1` was created.
+- The Git Repository was initialized and pushed to GitHub.
+- Next Step: Begin Phase 2 (Building the Omni App Shell UI).
