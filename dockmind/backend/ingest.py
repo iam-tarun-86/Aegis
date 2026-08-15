@@ -1,12 +1,3 @@
-import fitz  # PyMuPDF
-import os
-import uuid
-import re
-import docx
-from PIL import Image
-import pytesseract
-from db import save_chunk, save_document
-
 import os
 import uuid
 import re

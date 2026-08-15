@@ -25,7 +25,7 @@ function Start-Server {
 
 try {
     # 1. DockMind Backend
-    Start-Server -Name "DockMind Backend (Port 8001)" -Path "$scriptPath\dockmind\backend" -Command "uvicorn main:app --port 8001 --reload"
+    Start-Server -Name "DockMind Backend (Port 8001)" -Path "$scriptPath\dockmind\backend" -Command "python -m uvicorn main:app --port 8001 --reload"
 
     # 2. DockMind Frontend
     Start-Server -Name "DockMind Frontend (Port 5173)" -Path "$scriptPath\dockmind\frontend" -Command "npm run dev"
