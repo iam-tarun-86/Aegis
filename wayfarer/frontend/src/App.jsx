@@ -239,10 +239,10 @@ export default function App() {
               )}
 
               {/* Live Stream of Scraped Sites & Traffic */}
-              <div style={{ height: '76px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.68rem' }}>
+              <div style={{ height: '76px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.68rem', paddingRight: '0.2rem' }}>
                 {networkActivity && networkActivity.length > 0 ? (
-                  networkActivity.slice(-4).map((act, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.2rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                  networkActivity.map((act, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.2rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
                       <span style={{ color: act.type === 'search' ? '#38bdf8' : '#34d399', fontWeight: 700, fontSize: '0.6rem', textTransform: 'uppercase', flexShrink: 0 }}>
                         [{act.type}]
                       </span>
@@ -250,13 +250,13 @@ export default function App() {
                         {act.target}
                       </span>
                       <span style={{ color: act.status === 'Success' ? '#34d399' : '#f87171', fontSize: '0.6rem', fontWeight: 600, flexShrink: 0 }}>
-                        {act.size || act.status}
+                        {act.size && act.size !== 'N/A' ? act.size : (act.status === 'Success' ? '✓ OK' : (act.status || 'Active'))}
                       </span>
                     </div>
                   ))
                 ) : sources && sources.length > 0 ? (
-                  sources.slice(-4).map((src, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.2rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                  sources.map((src, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.2rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)', flexShrink: 0 }}>
                       <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.6rem', flexShrink: 0 }}>[SCRAPED]</span>
                       <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{src.title || src.url}</span>
                     </div>
@@ -271,13 +271,16 @@ export default function App() {
 
             {/* Logs stream */}
             <div style={{ background: 'rgba(10, 10, 12, 0.8)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '1.1rem 1.4rem', width: '380px', flexShrink: 0, pointerEvents: 'auto', backdropFilter: 'blur(12px)', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800 }}>
-                <Terminal size={12} />
-                <span>SIGNAL FEED:</span>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontWeight: 800 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <Terminal size={12} />
+                  <span>SIGNAL FEED:</span>
+                </div>
+                <span style={{ fontSize: '0.6rem', color: '#64748b' }}>{logs.length} events</span>
               </div>
-              <div style={{ height: '94px', overflowY: 'auto', fontSize: '0.7rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.25rem', lineHeight: 1.4 }}>
-                {logs.slice(-4).map((log, idx) => (
-                  <div key={idx} style={{ opacity: 0.4 + (idx / 3) * 0.6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ height: '94px', overflowY: 'auto', fontSize: '0.7rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.25rem', lineHeight: 1.4, paddingRight: '0.2rem' }}>
+                {logs.map((log, idx) => (
+                  <div key={idx} style={{ opacity: 0.5 + (idx / Math.max(logs.length, 1)) * 0.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     &gt; [{log.node.toUpperCase()}] {log.message}
                   </div>
                 ))}
