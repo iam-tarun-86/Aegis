@@ -1,27 +1,14 @@
 import os
-from openai import OpenAI
 import json
-from dotenv import load_dotenv
+from openai import OpenAI
 
-# Load .env from backend root or parent project directory
-load_dotenv()
-load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", "wayfarer", "backend", ".env"))
-load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+# Setup the OpenAI client to point strictly to the local llama.cpp server
+client = OpenAI(
+    base_url=os.getenv("OPENAI_BASE_URL", "http://localhost:8085/v1"),
+    api_key=os.getenv("OPENAI_API_KEY", "local-no-key-required")
+)
 
-NVIDIA_KEY = os.getenv("NVIDIA_API_KEY")
-
-if NVIDIA_KEY:
-    client = OpenAI(
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=NVIDIA_KEY
-    )
-    MODEL_NAME = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-70b-instruct")
-else:
-    client = OpenAI(
-        base_url=os.getenv("OPENAI_BASE_URL", "http://localhost:8085/v1"),
-        api_key=os.getenv("OPENAI_API_KEY", "local-no-key-required")
-    )
-    MODEL_NAME = os.getenv("LOCAL_MODEL", "gemma-4-e4b")
+MODEL_NAME = os.getenv("LOCAL_MODEL", "gemma-4-e4b")
 
 def rewrite_query(query: str) -> list[str]:
     # If greeting, skip rewriting
