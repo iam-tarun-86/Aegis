@@ -56,10 +56,19 @@ conn.commit()
 
 # --- 2. ChromaDB Setup ---
 # Used for dense vector retrieval
+from chromadb.utils import embedding_functions
+
 chroma_client = chromadb.PersistentClient(path=os.path.join(DB_DIR, "chroma"))
-# Using Chroma's default embedding function (all-MiniLM-L6-v2) to keep things simple and CPU bound
+
+# Explicitly use Nomic's embedding model for better semantic representation
+nomic_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="nomic-ai/nomic-embed-text-v1.5",
+    trust_remote_code=True
+)
+
 doc_collection = chroma_client.get_or_create_collection(
     name="doc_chunks",
+    embedding_function=nomic_ef,
     metadata={"hnsw:space": "cosine"}
 )
 
@@ -163,6 +172,7 @@ def clear_db():
     global doc_collection
     doc_collection = chroma_client.get_or_create_collection(
         name="doc_chunks",
+        embedding_function=nomic_ef,
         metadata={"hnsw:space": "cosine"}
     )
     refresh_bm25()

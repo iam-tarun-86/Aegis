@@ -4,13 +4,9 @@ websockets
 chromadb
 rank_bm25
 sentence-transformers
-PyMuPDF
+einops
 openai
 pydantic
 python-multipart
 python-docx
-Pillow
-pytesseract
-unstructured[all-docs]
-unstructured-inference
-opendataloader-pdf
+docling

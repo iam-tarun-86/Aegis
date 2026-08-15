@@ -64,5 +64,9 @@ The following upgrades are planned to maximize robustness:
   - Upgraded the Wayfarer Search engine to use the robust `duckduckgo-search` library.
   - Upgraded the Scraper to use Playwright in Turbo Mode (headless Chromium).
   - Wrapped Wayfarer's Planner and Critic LangGraph nodes with Instructor + Pydantic for strict JSON Schema enforcement.
+- Phase 5 (DockMind Upgrades) is COMPLETE.
+  - Initialized ChromaDB with the powerful `nomic-embed-text-v1.5` embeddings model for highly accurate vector representations.
+  - Ripped out the fragile legacy `unstructured` ingestion endpoints and completely replaced them with elite `Docling` document parsing.
+  - Implemented semantic chunking limits (max 1500 chars) ensuring LLMs don't break token context bounds during vector RAG search.
 - The Git Repository is tracking all changes.
-- Next Step: Begin Phase 5 (DockMind Upgrades).
+- Next Step: Begin Phase 6 (Verification).
