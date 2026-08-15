@@ -1,10 +1,20 @@
 import os
+from pathlib import Path
 from typing import Optional
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Load variables from .env
-load_dotenv()
+# Search and load .env from current directory and backend directory
+backend_dir = Path(__file__).resolve().parent.parent
+env_paths = [
+    Path.cwd() / ".env",
+    backend_dir / ".env",
+    backend_dir.parent / ".env",
+    backend_dir.parent.parent / ".env"
+]
+for p in env_paths:
+    if p.exists():
+        load_dotenv(dotenv_path=p, override=True)
 
 class Settings(BaseModel):
     LLAMA_SERVER_URL: str = os.getenv("LLAMA_SERVER_URL", "http://localhost:8085/v1")

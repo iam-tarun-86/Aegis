@@ -132,13 +132,14 @@ def call_llm(
     the local provider — that is its documented purpose (running the UI without
     llama-server), not a way to paper over a broken cloud endpoint.
     """
-    provider = "local"
-    model = settings.MODEL_NAME
+    has_env_key = bool(settings.NVIDIA_API_KEY and settings.NVIDIA_API_KEY.strip())
+    provider = "nvidia" if has_env_key else "local"
+    model = "meta/llama-3.1-70b-instruct" if has_env_key else settings.MODEL_NAME
     api_key = None
 
     if llm_config:
-        provider = llm_config.get("provider") or "local"
-        model = llm_config.get("model") or settings.MODEL_NAME
+        provider = llm_config.get("provider") or provider
+        model = llm_config.get("model") or model
         api_key = llm_config.get("api_key")
 
     is_cloud = provider == "nvidia"
@@ -403,13 +404,14 @@ def call_llm_json(
     """
     Calls the LLM enforcing a strict JSON schema using Instructor + Pydantic.
     """
-    provider = "local"
-    model = settings.MODEL_NAME
+    has_env_key = bool(settings.NVIDIA_API_KEY and settings.NVIDIA_API_KEY.strip())
+    provider = "nvidia" if has_env_key else "local"
+    model = "meta/llama-3.1-70b-instruct" if has_env_key else settings.MODEL_NAME
     api_key = None
 
     if llm_config:
-        provider = llm_config.get("provider") or "local"
-        model = llm_config.get("model") or settings.MODEL_NAME
+        provider = llm_config.get("provider") or provider
+        model = llm_config.get("model") or model
         api_key = llm_config.get("api_key")
 
     is_cloud = provider == "nvidia"

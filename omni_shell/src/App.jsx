@@ -2,11 +2,64 @@ import { useState, useEffect } from 'react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('research');
+  const [wayfarerReady, setWayfarerReady] = useState(false);
+  const [dockmindReady, setDockmindReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(20);
+  const [statusMessage, setStatusMessage] = useState("Initializing Aegis Neural Subsystems...");
+
+  useEffect(() => {
+    // Step-by-step loading simulation / health polling
+    const interval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        if (prev < 80) return prev + 15;
+        return prev;
+      });
+    }, 400);
+
+    const messageTimer1 = setTimeout(() => {
+      setStatusMessage("Starting Wayfarer Deep Research Engine (Port 3000)...");
+    }, 600);
+
+    const messageTimer2 = setTimeout(() => {
+      setStatusMessage("Connecting DockMind Document Intelligence RAG (Port 5173)...");
+    }, 1200);
+
+    const messageTimer3 = setTimeout(() => {
+      setStatusMessage("Warming Vector Caches & Neural Handoff Bridge...");
+    }, 1800);
+
+    // Max fallback safety timeout so loading screen never hangs
+    const safetyTimeout = setTimeout(() => {
+      setLoadingProgress(100);
+      setStatusMessage("All Subsystems Synchronized!");
+      setTimeout(() => setIsLoading(false), 500);
+    }, 3500);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(messageTimer1);
+      clearTimeout(messageTimer2);
+      clearTimeout(messageTimer3);
+      clearTimeout(safetyTimeout);
+    };
+  }, []);
+
+  // When both iframes report loaded, immediately complete loading
+  useEffect(() => {
+    if (wayfarerReady && dockmindReady) {
+      setLoadingProgress(100);
+      setStatusMessage("All Subsystems Online!");
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [wayfarerReady, dockmindReady]);
 
   useEffect(() => {
     // Listen for handoff messages from the Wayfarer iframe
     const handleMessage = (event) => {
-      // In production, you'd check event.origin here for security
       if (event.data && event.data.type === 'SWITCH_TAB') {
         console.log("Omni Shell received handoff, switching to:", event.data.tab);
         if (event.data.tab === 'chat') {
@@ -21,6 +74,45 @@ function App() {
 
   return (
     <div className="omni-container">
+      {/* Loading Splash Screen */}
+      <div className={`omni-splash-screen ${!isLoading ? 'fade-out' : ''}`}>
+        <div className="splash-card">
+          <div className="splash-logo">
+            <div className="splash-logo-icon">A</div>
+            <div className="splash-pulse"></div>
+          </div>
+          
+          <h1 className="splash-title">AEGIS</h1>
+          <p className="splash-subtitle">Autonomous Research & Document Intelligence</p>
+          
+          <div className="splash-progress-bar-container">
+            <div 
+              className="splash-progress-bar" 
+              style={{ width: `${loadingProgress}%` }}
+            />
+          </div>
+
+          <div className="splash-status-text">
+            {statusMessage}
+          </div>
+
+          <div className="splash-services">
+            <div className={`service-pill ${wayfarerReady || loadingProgress > 60 ? 'ready' : 'loading'}`}>
+              <span className="dot"></span>
+              Wayfarer Research
+            </div>
+            <div className={`service-pill ${dockmindReady || loadingProgress > 85 ? 'ready' : 'loading'}`}>
+              <span className="dot"></span>
+              DockMind RAG Chat
+            </div>
+            <div className={`service-pill ${loadingProgress === 100 ? 'ready' : 'loading'}`}>
+              <span className="dot"></span>
+              Neural Bridge
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Sidebar */}
       <aside className="omni-sidebar">
         <div className="omni-logo">
@@ -53,13 +145,14 @@ function App() {
         </div>
       </aside>
 
-      {/* Main Content Area (Iframes) */}
+      {/* Main Content Area (Preloaded Iframes for instant tab switching) */}
       <main className="omni-content">
         {/* Wayfarer Iframe (Port 3000) */}
         <iframe 
           src="http://localhost:3000" 
           className={`omni-iframe ${activeTab === 'research' ? 'active' : ''}`}
           title="Wayfarer Research"
+          onLoad={() => setWayfarerReady(true)}
         />
 
         {/* DockMind Iframe (Port 5173) */}
@@ -67,6 +160,7 @@ function App() {
           src="http://localhost:5173" 
           className={`omni-iframe ${activeTab === 'chat' ? 'active' : ''}`}
           title="DockMind Chat"
+          onLoad={() => setDockmindReady(true)}
         />
       </main>
     </div>

@@ -73,4 +73,8 @@ The following upgrades are planned to maximize robustness:
 - Phase 6 (Verification) is COMPLETE.
   - Successfully updated `start_omni.ps1` to launch all 5 components automatically without virtual environment issues (Wayfarer Backend, Wayfarer Frontend, DockMind Backend, DockMind Frontend, Omni App Shell).
   - Updated `start_omni.ps1` to run all services silently in the background by default (`-WindowStyle Hidden`), avoiding popping up 5 terminal windows, with an optional `-ShowWindows` flag for debugging.
+  - Fixed Omni Shell port to 3050 to avoid WSL conflict on 3001.
+  - Installed missing `node_modules` for `wayfarer/frontend` and `dockmind/frontend`.
+  - Added robust `.env` loading in Wayfarer backend for `NVIDIA_API_KEY`, defaulting to NVIDIA cloud inference when configured.
+  - Added an animated Glassmorphic Aegis preloader/splash screen in Omni Shell that preloads both Wayfarer and DockMind iframes in memory for 0ms instant tab switching.
   - All systems are integrated and verified. The `Aegis` project is now completely operational.
