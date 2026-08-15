@@ -28,6 +28,7 @@ function App() {
   
   const ws = useRef<WebSocket | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // --- Session Management ---
   const fetchSessions = async () => {
@@ -244,6 +245,11 @@ function App() {
     }
   }, [currentSessionId]);
 
+  // Auto-scroll chat to latest message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isGenerating]);
+
   // Auto-select session if current is invalid or missing
   useEffect(() => {
     if (sessions.length > 0) {
@@ -457,6 +463,7 @@ function App() {
                </div>
              </div>
           )}
+          <div ref={messagesEndRef} />
         </div>
         
         <div className="p-4 border-t border-gray-100 bg-white flex gap-3">
