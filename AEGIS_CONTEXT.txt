@@ -54,5 +54,7 @@ The following upgrades are planned to maximize robustness:
   - DockMind backend was safely moved to port 8001 to prevent collisions.
   - Windows paths were fixed.
   - `start_omni.ps1` was created.
+- Phase 2 (Omni App Shell) is COMPLETE.
+  - Built a Glassmorphic sidebar and configured dual iframes to flip instantly between Wayfarer (Port 3000) and DockMind (Port 5173).
 - The Git Repository was initialized and pushed to GitHub.
-- Next Step: Begin Phase 2 (Building the Omni App Shell UI).
+- Next Step: Begin Phase 3 (The Bridge).
