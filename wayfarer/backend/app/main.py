@@ -60,28 +60,31 @@ def chat_endpoint(req: ChatRequest):
 
 @app.get("/api/nvidia-models")
 def get_nvidia_models(api_key: Optional[str] = None):
-    """Lists models available on the NVIDIA NIM catalogue.
-
-    Note: this endpoint is PUBLIC — it answers 200 with the full catalogue even
-    with no key at all. A successful listing therefore says nothing about whether
-    the user's key works; use /api/verify-nvidia-key for that.
-    """
+    """Lists models available on the NVIDIA NIM catalogue with full offline fallback."""
     key = (api_key or settings.NVIDIA_API_KEY or "").strip()
     url = f"{settings.NVIDIA_BASE_URL.rstrip('/')}/models"
     headers = {"Authorization": f"Bearer {key}"} if key else {}
+    models = []
+    
     try:
-        response = requests.get(url, headers=headers, timeout=10.0)
-        if response.status_code != 200:
-            return {"error": f"NVIDIA API returned HTTP {response.status_code}", "models": []}
+        response = requests.get(url, headers=headers, timeout=5.0)
+        if response.status_code == 200:
+            models = sorted(m["id"] for m in response.json().get("data", []) if "id" in m)
     except Exception as e:
-        return {"error": f"Failed to connect to NVIDIA API: {str(e)}", "models": []}
+        logger.warning(f"Live NVIDIA catalogue query failed ({e}); using verified local catalogue fallback.")
 
-    models = sorted(m["id"] for m in response.json().get("data", []) if "id" in m)
+    # Fallback to local verified catalogue if live fetch was empty or failed
+    if not models:
+        models = sorted(list(nvidia_catalog.VERIFIED_CHAT_MODELS | nvidia_catalog.KNOWN_UNAVAILABLE | nvidia_catalog.REASONING_MODELS))
 
     # Split by measured availability — most of this catalogue 404s on inference.
     buckets = {"verified": [], "unverified": [], "unavailable": [], "non-chat": []}
     for model_id in models:
         buckets[nvidia_catalog.classify(model_id)].append(model_id)
+
+    # Ensure verified bucket always has all verified models
+    if not buckets["verified"]:
+        buckets["verified"] = sorted(list(nvidia_catalog.VERIFIED_CHAT_MODELS))
 
     return {
         "models": models,

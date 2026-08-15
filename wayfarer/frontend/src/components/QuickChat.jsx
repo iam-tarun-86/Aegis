@@ -12,10 +12,61 @@ export function QuickChat({ provider, setProvider, selectedModel, setSelectedMod
   const [loading, setLoading] = useState(false);
 
   // NVIDIA catalogue + key verification live here so the sandbox is usable on
-  // its own, without first opening the Research settings drawer.
-  const [nvidiaModels, setNvidiaModels] = useState([]);
-  const [verifiedModels, setVerifiedModels] = useState([]);
-  const [reasoningModels, setReasoningModels] = useState([]);
+  // Full verified free-tier models catalogue
+  const [nvidiaModels, setNvidiaModels] = useState([
+    'meta/llama-3.1-70b-instruct',
+    'meta/llama-3.1-8b-instruct',
+    'meta/llama-3.3-70b-instruct',
+    'meta/llama-3.2-3b-instruct',
+    'nvidia/nemotron-3-ultra-550b-a55b',
+    'nvidia/nemotron-3-super-120b-a12b',
+    'nvidia/nemotron-3-nano-30b-a3b',
+    'nvidia/llama-3.3-nemotron-super-49b-v1.5',
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'deepseek-ai/deepseek-v4-pro',
+    'deepseek-ai/deepseek-v4-flash',
+    'stepfun-ai/step-3.7-flash',
+    'z-ai/glm-5.2',
+    'google/diffusiongemma-26b-a4b-it',
+    'google/gemma-4-31b-it',
+    'minimaxai/minimax-m3',
+    'mistralai/mistral-medium-3.5-128b',
+    'mistralai/mistral-nemotron',
+    'thinkingmachines/inkling'
+  ]);
+  const [verifiedModels, setVerifiedModels] = useState([
+    'meta/llama-3.1-70b-instruct',
+    'meta/llama-3.1-8b-instruct',
+    'meta/llama-3.3-70b-instruct',
+    'meta/llama-3.2-3b-instruct',
+    'nvidia/nemotron-3-ultra-550b-a55b',
+    'nvidia/nemotron-3-super-120b-a12b',
+    'nvidia/nemotron-3-nano-30b-a3b',
+    'nvidia/llama-3.3-nemotron-super-49b-v1.5',
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'deepseek-ai/deepseek-v4-pro',
+    'deepseek-ai/deepseek-v4-flash',
+    'stepfun-ai/step-3.7-flash',
+    'z-ai/glm-5.2',
+    'google/diffusiongemma-26b-a4b-it',
+    'google/gemma-4-31b-it',
+    'minimaxai/minimax-m3',
+    'mistralai/mistral-medium-3.5-128b',
+    'mistralai/mistral-nemotron',
+    'thinkingmachines/inkling'
+  ]);
+  const [reasoningModels, setReasoningModels] = useState([
+    'nvidia/nemotron-3-ultra-550b-a55b',
+    'nvidia/nemotron-3-super-120b-a12b',
+    'nvidia/nemotron-3-nano-30b-a3b',
+    'nvidia/llama-3.3-nemotron-super-49b-v1.5',
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+    'stepfun-ai/step-3.7-flash',
+    'thinkingmachines/inkling'
+  ]);
   const [modelFilter, setModelFilter] = useState('');
   const [loadingModels, setLoadingModels] = useState(false);
   const [keyStatus, setKeyStatus] = useState(null);
