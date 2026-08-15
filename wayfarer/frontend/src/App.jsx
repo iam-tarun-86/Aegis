@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Shield, AlertCircle, Terminal, Activity, Brain, History, MessageSquare, Search, BookOpen } from 'lucide-react';
+import { Shield, AlertCircle, Terminal, Activity, Brain, History, MessageSquare, Search, BookOpen, Globe } from 'lucide-react';
 import { useResearchSocket } from './hooks/useResearchSocket';
 import { ResearchForm } from './components/ResearchForm';
 import { RoundProgress } from './components/RoundProgress';
@@ -205,11 +205,11 @@ export default function App() {
             </div>
           </div>
 
-          {/* Bottom HUD: Telemetry & Log stream */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          {/* Bottom HUD: Telemetry & Live Reconnaissance & Log stream */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '1.25rem', width: '100%' }}>
             
             {/* Telemetry */}
-            <div style={{ background: 'rgba(10, 10, 12, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.45rem', width: '290px', backdropFilter: 'blur(10px)' }}>
+            <div style={{ background: 'rgba(10, 10, 12, 0.8)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '1.1rem 1.4rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '270px', flexShrink: 0, backdropFilter: 'blur(12px)', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
               <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 800, letterSpacing: '0.05em' }}>SYSTEM TELEMETRY:</span>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>CRAFT: <span style={{ color: 'var(--secondary-accent)', fontWeight: 700 }}>{missionLabel}</span></div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>ROUND SECTOR: <span style={{ color: 'var(--primary-accent)', fontWeight: 700 }}>{currentRound} / {maxRounds}</span></div>
@@ -217,13 +217,65 @@ export default function App() {
               <div style={{ fontSize: '0.75rem', color: 'var(--text-main)' }}>ACTIVE AGENT: <span style={{ color: 'var(--primary-accent)', fontWeight: 700 }}>{activeNode ? activeNode.toUpperCase() : 'PLANNING'}</span></div>
             </div>
 
+            {/* Live Web Reconnaissance & Target Stream */}
+            <div style={{ flex: 1, minWidth: 0, background: 'rgba(10, 10, 12, 0.85)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '12px', padding: '1rem 1.25rem', pointerEvents: 'auto', backdropFilter: 'blur(12px)', boxShadow: '0 4px 25px rgba(0,0,0,0.6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '0.35rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.68rem', fontWeight: 800, color: 'var(--secondary-accent)', letterSpacing: '0.06em' }}>
+                  <Globe size={13} style={{ color: '#38bdf8' }} />
+                  <span>LIVE WEB RECONNAISSANCE & TARGET TRAFFIC</span>
+                </div>
+                <div style={{ fontSize: '0.65rem', color: '#94a3b8' }}>
+                  {sources.length} sources charted
+                </div>
+              </div>
+
+              {/* Current Active Search Query */}
+              {currentSearchQuery && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.7rem', color: '#60a5fa', marginBottom: '0.45rem', background: 'rgba(59, 130, 246, 0.12)', padding: '0.25rem 0.55rem', borderRadius: '6px', border: '1px solid rgba(59, 130, 246, 0.25)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <Search size={11} style={{ flexShrink: 0 }} />
+                  <span style={{ fontWeight: 700, flexShrink: 0 }}>Searching DuckDuckGo:</span>
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>"{currentSearchQuery}"</span>
+                </div>
+              )}
+
+              {/* Live Stream of Scraped Sites & Traffic */}
+              <div style={{ height: '76px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.68rem' }}>
+                {networkActivity && networkActivity.length > 0 ? (
+                  networkActivity.slice(-4).map((act, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.2rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                      <span style={{ color: act.type === 'search' ? '#38bdf8' : '#34d399', fontWeight: 700, fontSize: '0.6rem', textTransform: 'uppercase', flexShrink: 0 }}>
+                        [{act.type}]
+                      </span>
+                      <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontFamily: 'var(--font-mono)' }}>
+                        {act.target}
+                      </span>
+                      <span style={{ color: act.status === 'Success' ? '#34d399' : '#f87171', fontSize: '0.6rem', fontWeight: 600, flexShrink: 0 }}>
+                        {act.size || act.status}
+                      </span>
+                    </div>
+                  ))
+                ) : sources && sources.length > 0 ? (
+                  sources.slice(-4).map((src, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'rgba(255, 255, 255, 0.03)', padding: '0.2rem 0.45rem', borderRadius: '4px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                      <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.6rem', flexShrink: 0 }}>[SCRAPED]</span>
+                      <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{src.title || src.url}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ color: '#64748b', fontStyle: 'italic', display: 'flex', alignItems: 'center', height: '100%', justifyContent: 'center' }}>
+                    Scanning planetary data streams & reconnaissance queries...
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Logs stream */}
-            <div style={{ background: 'rgba(10, 10, 12, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '1.25rem 1.5rem', width: '450px', pointerEvents: 'auto', backdropFilter: 'blur(10px)' }}>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800 }}>
+            <div style={{ background: 'rgba(10, 10, 12, 0.8)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '1.1rem 1.4rem', width: '380px', flexShrink: 0, pointerEvents: 'auto', backdropFilter: 'blur(12px)', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800 }}>
                 <Terminal size={12} />
                 <span>SIGNAL FEED:</span>
               </div>
-              <div style={{ height: '100px', overflowY: 'auto', fontSize: '0.7rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.3rem', lineHeight: 1.4 }}>
+              <div style={{ height: '94px', overflowY: 'auto', fontSize: '0.7rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '0.25rem', lineHeight: 1.4 }}>
                 {logs.slice(-4).map((log, idx) => (
                   <div key={idx} style={{ opacity: 0.4 + (idx / 3) * 0.6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     &gt; [{log.node.toUpperCase()}] {log.message}
