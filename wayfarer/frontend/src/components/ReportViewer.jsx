@@ -196,35 +196,53 @@ export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunni
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
           {/* THE BRIDGE: Hand off to DockMind */}
           <button
-            onClick={async () => {
+            onClick={async (e) => {
+              const btn = e.currentTarget;
+              const originalText = btn.innerHTML;
               try {
-                // 1. Generate unique session ID
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                btn.innerText = "⏳ Transferring to DockMind...";
+
+                const host = window.location.hostname || 'localhost';
                 const sessionId = 'wayfarer-' + Math.random().toString(36).substring(2, 9);
                 
-                // 2. Create the session in DockMind
-                await fetch('http://localhost:8001/sessions', {
+                // 1. Create the session in DockMind
+                const sessRes = await fetch(`http://${host}:8001/sessions`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ session_id: sessionId, name: 'Wayfarer Research Report' })
                 });
 
-                // 3. Create a markdown file blob and ingest it
+                if (!sessRes.ok) {
+                  throw new Error(`Failed to create session on DockMind (HTTP ${sessRes.status})`);
+                }
+
+                // 2. Create a markdown file blob and ingest it
                 const blob = new Blob([reportText], { type: 'text/markdown' });
                 const formData = new FormData();
                 formData.append('file', blob, 'Wayfarer_Research.md');
                 formData.append('session_id', sessionId);
                 
-                await fetch('http://localhost:8001/ingest', {
+                const ingestRes = await fetch(`http://${host}:8001/ingest`, {
                   method: 'POST',
                   body: formData,
                 });
 
-                // 4. Switch tab via postMessage to Omni Shell
+                if (!ingestRes.ok) {
+                  throw new Error(`Failed to ingest report into DockMind (HTTP ${ingestRes.status})`);
+                }
+
+                // 3. Switch tab via postMessage to Omni Shell
                 window.parent.postMessage({ type: 'SWITCH_TAB', tab: 'chat' }, '*');
                 
-              } catch (e) {
-                console.error("Handoff failed", e);
-                alert("Failed to send to DockMind. Is the backend running on port 8001?");
+              } catch (err) {
+                console.error("Handoff failed:", err);
+                alert(`Failed to send to DockMind (${err.message || 'Is backend running on port 8001?'})`);
+              } finally {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.innerHTML = originalText;
               }
             }}
             title="Send to DockMind for Q&A"
