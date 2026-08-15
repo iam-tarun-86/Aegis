@@ -20,11 +20,13 @@ combination of two separate systems:
 CRITICAL RULE: Wayfarer and DockMind must NOT be merged into a single 
 React codebase. Doing so causes Tailwind/Vanilla CSS collisions.
 - They operate as interconnected microservices.
-- The UI is a Master App Shell (`omni_shell` on Port 3001) that contains 
+- The UI is a Master App Shell (`omni_shell` on Port 3050) that contains 
   a Sidebar.
-- The main view is an Iframe that switches seamlessly between Wayfarer 
-  (Port 3000) and DockMind (Port 5173).
-- Windows Native Startup: The entire system boots via a master 
+- Port Strategy: Wayfarer (8000), Omni Shell (3050), DockMind (8001).
+- System Architecture:
+  1. Wayfarer UI (Port 3000) & Backend (Port 8000).
+  2. DockMind UI (Port 5173) & Backend (Port 8001).
+  3. Omni App Shell (Port 3050): The master glassmorphic shell embedding both tools in an iframe tab switcher. 
   `start_omni.ps1` PowerShell script which launches all 4 local servers 
   (2 FastAPIs, 2 Vites) safely in the background.
 

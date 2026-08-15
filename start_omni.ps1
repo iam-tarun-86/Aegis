@@ -37,7 +37,7 @@ try {
     Start-Server -Name "Wayfarer Frontend (Port 3000)" -Path "$scriptPath\wayfarer\frontend" -Command "npm run dev"
 
     # 5. Omni App Shell
-    Start-Server -Name "Omni App Shell (Port 3001)" -Path "$scriptPath\omni_shell" -Command "npm run dev -- --port 3001"
+    Start-Server -Name "Omni App Shell (Port 3050)" -Path "$scriptPath\omni_shell" -Command "npm run dev -- --port 3050"
 
     Write-Host ""
     Write-Host "=============================================" -ForegroundColor Cyan
@@ -47,7 +47,7 @@ try {
         Write-Host "🚀 Omni System is running silently in the background!" -ForegroundColor Green
         Write-Host "   (Pass '-ShowWindows' if you ever want visible terminal windows for debugging)" -ForegroundColor DarkGray
     }
-    Write-Host "   - Omni Shell: http://localhost:3001"
+    Write-Host "   - Omni Shell: http://localhost:3050"
     Write-Host "   - Wayfarer UI: http://localhost:3000"
     Write-Host "   - DockMind UI: http://localhost:5173"
     Write-Host ""
