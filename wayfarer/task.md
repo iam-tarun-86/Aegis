@@ -1,0 +1,13 @@
+- [x] Fullscreen fixed background visualizer (`TheVoid.jsx`)
+- [x] Frost-glass layout controls (`index.css`)
+- [x] Config state lifting & tab selection setup (`App.jsx`)
+- [x] Shared LLM configuration persistent widget (`LlmConfigPanel.jsx`)
+- [x] Floating Glassmorphic Modal sandbox window for dev model tester (`App.jsx`, `index.css`)
+- [x] Model Sandbox launch button in header and configuration bar (`App.jsx`, `LlmConfigPanel.jsx`)
+- [x] Auto-collapsing console view during active research runs (`App.jsx`, `index.css`)
+- [x] Floating spatial HUD overlay controls (Show/Hide Console, Cancel Run) (`App.jsx`, `index.css`)
+- [x] Glowing 3D rocket cone probe animations to sources in space (`TheVoid.jsx`)
+- [x] REST chat handler `/api/chat` (`main.py`)
+- [x] Past Deep Searches LocalStorage history dashboard (`PastSearches.jsx`)
+- [x] Academic report formatting styling structures
+- [x] Rebuild production assets successfully (`npm run build`)

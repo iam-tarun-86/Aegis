@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(command -v chromium chromium-browser google-chrome)",
+      "Bash(grep -v '^\\\\${')",
+      "Bash(grep -v '^$')",
+      "Bash(./venv/bin/python -c ' *)",
+      "Bash(sed -i 's|meta/llama-3.1-8b-instruct|stepfun-ai/step-3.7-flash|' /tmp/claude-1000/-home-tarun-Wayfarer/a5656795-4dc5-413a-b1fd-63d37e7baee0/scratchpad/e2e.py)",
+      "Bash(./venv/bin/python /tmp/claude-1000/-home-tarun-Wayfarer/a5656795-4dc5-413a-b1fd-63d37e7baee0/scratchpad/e2e.py)",
+      "Bash(./venv/bin/python -c \"import app.main; print\\('backend OK'\\)\")",
+      "Bash(./../../../backend/venv/bin/python -)",
+      "Bash(curl -s -m 5 http://localhost:8085/props)",
+      "Bash(curl -s -m 90 http://localhost:8085/v1/chat/completions -H 'Content-Type: application/json' -d '{\"model\":\"gemma-4-e4b-q4_k_m\",\"messages\":[{\"role\":\"user\",\"content\":\"Reply with exactly: PONG\"}],\"max_tokens\":20}')",
+      "Bash(./venv/bin/python /tmp/claude-1000/-home-tarun-Wayfarer/8804490f-5e25-420a-ab58-294102c235b6/scratchpad/local_bench.py)",
+      "Bash(./venv/bin/python /tmp/claude-1000/-home-tarun-Wayfarer/8804490f-5e25-420a-ab58-294102c235b6/scratchpad/local_stats.py)",
+      "Read(//home/tarun/**)",
+      "Bash(./venv/bin/python /tmp/claude-1000/-home-tarun-Wayfarer/8804490f-5e25-420a-ab58-294102c235b6/scratchpad/test_norm.py)",
+      "Bash(./venv/bin/python /tmp/claude-1000/-home-tarun-Wayfarer/8804490f-5e25-420a-ab58-294102c235b6/scratchpad/local_final.py)",
+      "Bash(./venv/bin/python -c \"import app.main; from app.agents.writer import writer_node; print\\('backend imports OK'\\)\")"
+    ]
+  }
+}

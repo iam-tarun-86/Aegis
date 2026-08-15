@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Node
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database & Data
+*.sqlite3
+*.db
+backend/data/
+backend/chroma/
+backend/data/chroma/
+backend/data/documents/
+backend/data/metadata.db
+
+# OS
+.DS_Store
+Thumbs.db
