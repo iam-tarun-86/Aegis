@@ -76,5 +76,7 @@ The following upgrades are planned to maximize robustness:
   - Fixed Omni Shell port to 3050 to avoid WSL conflict on 3001.
   - Installed missing `node_modules` for `wayfarer/frontend` and `dockmind/frontend`.
   - Added robust `.env` loading in Wayfarer backend for `NVIDIA_API_KEY`, defaulting to NVIDIA cloud inference when configured.
+  - Installed all required Python backend dependencies (`fastapi`, `langgraph`, `langchain-core`, `chromadb`, `sentence-transformers`, etc.) in the global environment.
+  - Verified Wayfarer and DockMind endpoints online.
   - Added an animated Glassmorphic Aegis preloader/splash screen in Omni Shell that preloads both Wayfarer and DockMind iframes in memory for 0ms instant tab switching.
   - All systems are integrated and verified. The `Aegis` project is now completely operational.
