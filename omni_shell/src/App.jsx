@@ -160,7 +160,7 @@ function App() {
       <main className="omni-content">
         {/* Wayfarer Iframe (Port 3000) */}
         <iframe 
-          src="http://localhost:3000" 
+          src={`http://${typeof window !== 'undefined' ? (window.location.hostname || 'localhost') : 'localhost'}:3000`} 
           className={`omni-iframe ${activeTab === 'research' ? 'active' : ''}`}
           title="Wayfarer Research"
           onLoad={() => setWayfarerReady(true)}
@@ -169,7 +169,7 @@ function App() {
         {/* DockMind Iframe (Port 5173) */}
         <iframe 
           ref={dockmindRef}
-          src="http://localhost:5173" 
+          src={`http://${typeof window !== 'undefined' ? (window.location.hostname || 'localhost') : 'localhost'}:5173`} 
           className={`omni-iframe ${activeTab === 'chat' ? 'active' : ''}`}
           title="DockMind Chat"
           onLoad={() => setDockmindReady(true)}
