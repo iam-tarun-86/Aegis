@@ -70,4 +70,5 @@ The following upgrades are planned to maximize robustness:
   - Implemented semantic chunking limits (max 1500 chars) ensuring LLMs don't break token context bounds during vector RAG search.
 - Phase 6 (Verification) is COMPLETE.
   - Successfully updated `start_omni.ps1` to launch all 5 components automatically without virtual environment issues (Wayfarer Backend, Wayfarer Frontend, DockMind Backend, DockMind Frontend, Omni App Shell).
+  - Updated `start_omni.ps1` to run all services silently in the background by default (`-WindowStyle Hidden`), avoiding popping up 5 terminal windows, with an optional `-ShowWindows` flag for debugging.
   - All systems are integrated and verified. The `Aegis` project is now completely operational.

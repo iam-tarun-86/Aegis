@@ -1,4 +1,7 @@
 # start_omni.ps1
+param(
+    [switch]$ShowWindows
+)
 
 Write-Host "=============================================" -ForegroundColor Cyan
 Write-Host "🌌 Starting Project Omni (Windows Native)" -ForegroundColor Cyan
@@ -15,8 +18,8 @@ function Start-Server {
     )
     Write-Host "-> Starting $Name..." -ForegroundColor Green
     
-    # Launch in a new window so you can see the logs for each server
-    $proc = Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `"cd '$Path'; $Command`"" -PassThru
+    $windowStyle = if ($ShowWindows) { "Normal" } else { "Hidden" }
+    $proc = Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit -Command `"cd '$Path'; $Command`"" -WindowStyle $windowStyle -PassThru
     $script:processes += $proc
 }
 
@@ -38,12 +41,17 @@ try {
 
     Write-Host ""
     Write-Host "=============================================" -ForegroundColor Cyan
-    Write-Host "🚀 Omni System is active in background windows!" -ForegroundColor Green
+    if ($ShowWindows) {
+        Write-Host "🚀 Omni System is active in separate windows!" -ForegroundColor Green
+    } else {
+        Write-Host "🚀 Omni System is running silently in the background!" -ForegroundColor Green
+        Write-Host "   (Pass '-ShowWindows' if you ever want visible terminal windows for debugging)" -ForegroundColor DarkGray
+    }
     Write-Host "   - Omni Shell: http://localhost:3001"
     Write-Host "   - Wayfarer UI: http://localhost:3000"
     Write-Host "   - DockMind UI: http://localhost:5173"
     Write-Host ""
-    Write-Host "Press Ctrl+C here to safely shut down all servers." -ForegroundColor Yellow
+    Write-Host "Press Ctrl+C in this terminal to safely shut down all 5 servers." -ForegroundColor Yellow
     Write-Host "=============================================" -ForegroundColor Cyan
 
     # Wait indefinitely until Ctrl+C
