@@ -39,8 +39,15 @@ function downloadFile(content, filename, contentType) {
 export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, isRunning }) {
   const [selectedSection, setSelectedSection] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [isRefining, setIsRefining] = useState(false);
+  const [refineSuccess, setRefineSuccess] = useState('');
+  const [currentReport, setCurrentReport] = useState(reportText);
 
-  if (!reportText) {
+  useEffect(() => {
+    setCurrentReport(reportText);
+  }, [reportText]);
+
+  if (!currentReport) {
     return (
       <div className="report-empty">
         <div className="report-empty-orbit">
@@ -64,26 +71,71 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
     );
   }
 
-  const htmlContent = renderCitations(marked(reportText));
+  const htmlContent = renderCitations(marked(currentReport));
 
-  // Parse sections (headers starting with ##) for section-level rerun selection
+  // Smart section parser extracting markdown and structured headers
   const sections = [];
-  const lines = reportText.split('\n');
+  const lines = (currentReport || '').split('\n');
   lines.forEach(line => {
-    if (line.startsWith('## ') && !line.includes('Sources') && !line.includes('References') && !line.includes('Executive')) {
-      sections.push(line.replace('## ', '').trim());
+    const trimmed = line.trim();
+    const headingMatch = trimmed.match(/^(?:#+\s+|\*\*\s*\d*[\.\)]?\s*)([^*#\n]+?)(?:\s*\*+|\s*#+)?$/);
+    if (headingMatch && headingMatch[1]) {
+      const clean = headingMatch[1].replace(/[*_#`~:]/g, '').trim();
+      if (clean.length > 3 && clean.length < 80 && !clean.toLowerCase().includes('sources') && !clean.toLowerCase().includes('references') && !sections.includes(clean)) {
+        sections.push(clean);
+      }
     }
   });
 
-  const handleRerun = (e) => {
+  // Default fallback sections if headers were unstructured
+  if (sections.length === 0) {
+    sections.push(
+      "Executive Summary",
+      "Key Findings & Core Themes",
+      "Major Releases & Leading Organizations",
+      "Architectural Evolution & Technical Mechanisms",
+      "Ecosystem Impact & Benchmark Performance",
+      "Challenges, Tradeoffs & Future Outlook"
+    );
+  }
+
+  const handleRerun = async (e) => {
     e.preventDefault();
-    if (!selectedSection || !feedback.trim() || !onSectionRerun) return;
-    onSectionRerun(selectedSection, feedback);
-    setFeedback('');
+    if (!selectedSection || !feedback.trim() || isRefining) return;
+    
+    setIsRefining(true);
+    setRefineSuccess('');
+    try {
+      const host = window.location.hostname || 'localhost';
+      const res = await fetch(`http://${host}:8000/api/refine-section`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          section: selectedSection,
+          feedback: feedback.trim(),
+          report: currentReport,
+          sources: sources || []
+        })
+      });
+      const data = await res.json();
+      if (data.status === 'success' && data.updated_report) {
+        setCurrentReport(data.updated_report);
+        setRefineSuccess(`✓ Section '${selectedSection}' successfully updated!`);
+        setFeedback('');
+        setTimeout(() => setRefineSuccess(''), 5000);
+      } else {
+        alert(data.message || 'Failed to refine section.');
+      }
+    } catch (err) {
+      console.error('Refinement failed:', err);
+      alert('Could not reach backend to refine section. Is backend active on port 8000?');
+    } finally {
+      setIsRefining(false);
+    }
   };
 
   const handleDownloadMarkdown = () => {
-    downloadFile(reportText, 'wayfarer-research-report.md', 'text/markdown;charset=utf-8;');
+    downloadFile(currentReport, 'wayfarer-research-report.md', 'text/markdown;charset=utf-8;');
   };
 
   const handleDownloadHTML = () => {
@@ -304,9 +356,16 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
       {/* Interactive Section-level Rerun Panel */}
       {sections.length > 0 && (
         <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--bg-panel-border)', borderRadius: '10px', padding: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <RefreshCw size={14} className={isRunning ? "animate-spin text-indigo-400" : "text-indigo-400"} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)' }}>Refine Section-Level Research</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <RefreshCw size={14} className={isRefining ? "animate-spin text-indigo-400" : "text-indigo-400"} />
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)' }}>Refine Section-Level Research</span>
+            </div>
+            {refineSuccess && (
+              <span style={{ fontSize: '0.72rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                {refineSuccess}
+              </span>
+            )}
           </div>
           
           <form onSubmit={handleRerun} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -315,7 +374,7 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
                 style={{ flex: 1, background: 'rgba(2, 6, 23, 0.8)', border: '1px solid var(--bg-panel-border)', color: 'var(--text-main)', padding: '0.5rem', borderRadius: '6px', fontSize: '0.75rem' }}
-                disabled={isRunning}
+                disabled={isRefining || isRunning}
               >
                 <option value="">-- Choose Section to Redo --</option>
                 {sections.map((sec, idx) => (
@@ -325,11 +384,11 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
 
               <button
                 type="submit"
-                disabled={isRunning || !selectedSection || !feedback.trim()}
-                style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}
+                disabled={isRefining || isRunning || !selectedSection || !feedback.trim()}
+                style={{ background: isRefining ? 'rgba(99, 102, 241, 0.5)' : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: isRefining ? 'wait' : 'pointer' }}
               >
-                <Send size={12} />
-                <span>Submit Refinement</span>
+                {isRefining ? <RefreshCw size={12} className="animate-spin" /> : <Send size={12} />}
+                <span>{isRefining ? 'Refining...' : 'Submit Refinement'}</span>
               </button>
             </div>
 
@@ -338,7 +397,7 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               style={{ width: '100%', height: '50px', background: 'rgba(2, 6, 23, 0.6)', border: '1px solid var(--bg-panel-border)', color: 'var(--text-main)', padding: '0.5rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', outline: 'none', resize: 'none' }}
-              disabled={isRunning || !selectedSection}
+              disabled={isRefining || isRunning || !selectedSection}
             />
           </form>
         </div>

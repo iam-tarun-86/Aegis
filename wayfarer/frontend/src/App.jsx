@@ -10,6 +10,7 @@ import { ReasoningSidebar } from './components/ReasoningSidebar';
 import { NetworkActivity } from './components/NetworkActivity';
 import { QuickChat } from './components/QuickChat';
 import { PastSearches } from './components/PastSearches';
+import { AegisLogo } from './components/AegisLogo';
 
 export default function App() {
   const {
@@ -311,8 +312,11 @@ export default function App() {
       
       {/* Top Header Bar */}
       <header className="app-header" style={{ flexShrink: 0 }}>
-        <div className="brand-title">
-          <span>🌌 Wayfarer</span>
+        <div className="brand-title" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <AegisLogo size={24} />
+          <span style={{ fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(to right, #ffffff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            Wayfarer
+          </span>
           <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--secondary-accent)', background: 'rgba(6, 182, 212, 0.08)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(6, 182, 212, 0.15)' }}>
             Deep Research Console
           </span>

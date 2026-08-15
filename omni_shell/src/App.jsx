@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { AegisLogo } from './components/AegisLogo';
 
 function App() {
   const [activeTab, setActiveTab] = useState('research');
@@ -88,7 +89,7 @@ function App() {
       <div className={`omni-splash-screen ${!isLoading ? 'fade-out' : ''}`}>
         <div className="splash-card">
           <div className="splash-logo">
-            <div className="splash-logo-icon">A</div>
+            <AegisLogo size={68} />
             <div className="splash-pulse"></div>
           </div>
           
@@ -126,7 +127,7 @@ function App() {
       {/* Sidebar */}
       <aside className="omni-sidebar">
         <div className="omni-logo">
-          <div className="omni-logo-icon">A</div>
+          <AegisLogo size={34} />
           <div className="omni-logo-text">Aegis</div>
         </div>
 

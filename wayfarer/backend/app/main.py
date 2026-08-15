@@ -138,6 +138,59 @@ def verify_nvidia_key(api_key: Optional[str] = None, model: str = "meta/llama-3.
         return {"valid": True, "source": source, "warning": "Key works but the endpoint is saturated (HTTP 503)."}
     return {"valid": False, "source": source, "error": f"HTTP {response.status_code}: {response.text[:200]}"}
 
+class RefineSectionReq(BaseModel):
+    section: str
+    feedback: str
+    report: str
+    sources: list = []
+    llm_config: Optional[dict] = None
+
+@app.post("/api/refine-section")
+async def api_refine_section(req: RefineSectionReq):
+    try:
+        sources_context = ""
+        for s in req.sources:
+            sources_context += f"\n- Title: {s.get('title', 'Unknown')}\n  Snippet: {s.get('snippet', '')}\n"
+            
+        system_prompt = (
+            "You are an expert scientific researcher. The user wants to rewrite and refine a specific section of an existing research report.\n"
+            "Incorporate their feedback and maintain rigorous academic citation format '[Source N (Confidence: Level)]'.\n"
+            "Return ONLY the updated content for this section (including the section header)."
+        )
+        user_prompt = (
+            f"Existing Full Report:\n{req.report[:4000]}\n\n"
+            f"Sources Available:\n{sources_context[:3000]}\n\n"
+            f"Target Section to Refine: '{req.section}'\n"
+            f"User Feedback/Instructions: '{req.feedback}'\n\n"
+            f"Please generate the refined and expanded section content now."
+        )
+        
+        refined_content = call_llm(
+            prompt=user_prompt,
+            system_prompt=system_prompt,
+            temperature=0.4,
+            llm_config=req.llm_config
+        )
+        
+        # Replace the section in the full report
+        old_report = req.report
+        escaped_section = re.escape(req.section.strip())
+        pattern = re.compile(rf'(#+\s*{escaped_section}[\s\S]*?)(?=\n#+ |\Z)', re.IGNORECASE)
+        
+        if pattern.search(old_report):
+            new_report = pattern.sub(refined_content.strip() + "\n\n", old_report)
+        else:
+            new_report = old_report + f"\n\n## {req.section}\n\n" + refined_content.strip()
+            
+        return {
+            "status": "success",
+            "refined_section": refined_content,
+            "updated_report": new_report
+        }
+    except Exception as e:
+        logger.error(f"Error refining section: {e}")
+        return {"status": "error", "message": str(e)}
+
 @app.websocket("/ws/research")
 async def websocket_research(websocket: WebSocket):
     await websocket.accept()
