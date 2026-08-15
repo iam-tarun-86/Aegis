@@ -22,20 +22,24 @@ function Start-Server {
 
 try {
     # 1. DockMind Backend
-    Start-Server -Name "DockMind Backend (Port 8001)" -Path "$scriptPath\dockmind\backend" -Command ".\venv\Scripts\activate; uvicorn main:app --port 8001 --reload"
+    Start-Server -Name "DockMind Backend (Port 8001)" -Path "$scriptPath\dockmind\backend" -Command "uvicorn main:app --port 8001 --reload"
 
     # 2. DockMind Frontend
     Start-Server -Name "DockMind Frontend (Port 5173)" -Path "$scriptPath\dockmind\frontend" -Command "npm run dev"
 
     # 3. Wayfarer Backend
-    Start-Server -Name "Wayfarer Backend (Port 8000)" -Path "$scriptPath\wayfarer\backend" -Command ".\venv\Scripts\activate; python run.py"
+    Start-Server -Name "Wayfarer Backend (Port 8000)" -Path "$scriptPath\wayfarer\backend" -Command "python run.py"
 
     # 4. Wayfarer Frontend
     Start-Server -Name "Wayfarer Frontend (Port 3000)" -Path "$scriptPath\wayfarer\frontend" -Command "npm run dev"
 
+    # 5. Omni App Shell
+    Start-Server -Name "Omni App Shell (Port 3001)" -Path "$scriptPath\omni_shell" -Command "npm run dev -- --port 3001"
+
     Write-Host ""
     Write-Host "=============================================" -ForegroundColor Cyan
     Write-Host "🚀 Omni System is active in background windows!" -ForegroundColor Green
+    Write-Host "   - Omni Shell: http://localhost:3001"
     Write-Host "   - Wayfarer UI: http://localhost:3000"
     Write-Host "   - DockMind UI: http://localhost:5173"
     Write-Host ""
