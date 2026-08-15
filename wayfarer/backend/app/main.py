@@ -139,7 +139,7 @@ def verify_nvidia_key(api_key: Optional[str] = None, model: str = "meta/llama-3.
     return {"valid": False, "source": source, "error": f"HTTP {response.status_code}: {response.text[:200]}"}
 
 class RefineSectionReq(BaseModel):
-    section: str
+    section: str = "Whole Report Synthesis"
     feedback: str
     report: str
     sources: list = []
@@ -150,20 +150,37 @@ async def api_refine_section(req: RefineSectionReq):
     try:
         sources_context = ""
         for s in req.sources:
-            sources_context += f"\n- Title: {s.get('title', 'Unknown')}\n  Snippet: {s.get('snippet', '')}\n"
+            if isinstance(s, dict):
+                title = s.get("title") or s.get("url") or "Unknown"
+                snippet = s.get("summary") or s.get("snippet") or ""
+                sources_context += f"\n- Title: {title}\n  Snippet: {snippet[:300]}\n"
             
+        target_section = (req.section or "Whole Report Synthesis").strip()
+        is_whole_report = target_section.lower() in [
+            "whole report", "whole report synthesis", "entire report", "entire report synthesis", "all", ""
+        ]
+        
         system_prompt = (
-            "You are an expert scientific researcher. The user wants to rewrite and refine a specific section of an existing research report.\n"
+            "You are an expert scientific researcher. The user wants to rewrite and refine a research report or a specific section.\n"
             "Incorporate their feedback and maintain rigorous academic citation format '[Source N (Confidence: Level)]'.\n"
-            "Return ONLY the updated content for this section (including the section header)."
+            "Output clear, authoritative, and direct markdown."
         )
-        user_prompt = (
-            f"Existing Full Report:\n{req.report[:4000]}\n\n"
-            f"Sources Available:\n{sources_context[:3000]}\n\n"
-            f"Target Section to Refine: '{req.section}'\n"
-            f"User Feedback/Instructions: '{req.feedback}'\n\n"
-            f"Please generate the refined and expanded section content now."
-        )
+        
+        if is_whole_report:
+            user_prompt = (
+                f"Existing Report:\n{req.report[:5000]}\n\n"
+                f"Available Sources:\n{sources_context[:4000]}\n\n"
+                f"User Instructions/Feedback:\n{req.feedback}\n\n"
+                f"Please produce the complete revised research report in Markdown:"
+            )
+        else:
+            user_prompt = (
+                f"Existing Full Report:\n{req.report[:4000]}\n\n"
+                f"Available Sources:\n{sources_context[:3000]}\n\n"
+                f"Target Section to Refine: '{target_section}'\n"
+                f"User Feedback/Instructions: '{req.feedback}'\n\n"
+                f"Please generate ONLY the refined and updated markdown content for this section (including the section header '## {target_section}')."
+            )
         
         refined_content = call_llm(
             prompt=user_prompt,
@@ -172,15 +189,17 @@ async def api_refine_section(req: RefineSectionReq):
             llm_config=req.llm_config
         )
         
-        # Replace the section in the full report
-        old_report = req.report
-        escaped_section = re.escape(req.section.strip())
-        pattern = re.compile(rf'(#+\s*{escaped_section}[\s\S]*?)(?=\n#+ |\Z)', re.IGNORECASE)
-        
-        if pattern.search(old_report):
-            new_report = pattern.sub(refined_content.strip() + "\n\n", old_report)
+        if is_whole_report:
+            new_report = refined_content.strip()
         else:
-            new_report = old_report + f"\n\n## {req.section}\n\n" + refined_content.strip()
+            old_report = req.report
+            escaped_section = re.escape(target_section)
+            pattern = re.compile(rf'(#+\s*{escaped_section}[\s\S]*?)(?=\n#+ |\Z)', re.IGNORECASE)
+            
+            if pattern.search(old_report):
+                new_report = pattern.sub(refined_content.strip() + "\n\n", old_report)
+            else:
+                new_report = old_report + f"\n\n## {target_section}\n\n" + refined_content.strip()
             
         return {
             "status": "success",
@@ -188,7 +207,7 @@ async def api_refine_section(req: RefineSectionReq):
             "updated_report": new_report
         }
     except Exception as e:
-        logger.error(f"Error refining section: {e}")
+        logger.error(f"Error refining section: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
 
 @app.websocket("/ws/research")

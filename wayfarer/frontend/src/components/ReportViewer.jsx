@@ -78,10 +78,27 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
   const lines = (currentReport || '').split('\n');
   lines.forEach(line => {
     const trimmed = line.trim();
-    const headingMatch = trimmed.match(/^(?:#+\s+|\*\*\s*\d*[\.\)]?\s*)([^*#\n]+?)(?:\s*\*+|\s*#+)?$/);
-    if (headingMatch && headingMatch[1]) {
-      const clean = headingMatch[1].replace(/[*_#`~:]/g, '').trim();
-      if (clean.length > 3 && clean.length < 80 && !clean.toLowerCase().includes('sources') && !clean.toLowerCase().includes('references') && !sections.includes(clean)) {
+    if (!trimmed) return;
+    
+    let title = null;
+    if (/^#{1,6}\s+/.test(trimmed)) {
+      title = trimmed.replace(/^#{1,6}\s+/, '').trim();
+    } else if (/^\*\*[^*]+\*\*$/.test(trimmed)) {
+      title = trimmed.replace(/^\*\*|\*\*$/g, '').trim();
+    } else if (/^(?:[0-9]+|[IVXLCDM]+)\.\s+[A-Z]/.test(trimmed) && trimmed.length < 80) {
+      title = trimmed;
+    }
+
+    if (title) {
+      const clean = title.replace(/[*_#`~:]/g, '').trim();
+      const lower = clean.toLowerCase();
+      if (
+        clean.length >= 3 &&
+        clean.length <= 100 &&
+        !lower.includes('source') &&
+        !lower.includes('reference') &&
+        !sections.includes(clean)
+      ) {
         sections.push(clean);
       }
     }
@@ -101,8 +118,13 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
 
   const handleRerun = async (e) => {
     e.preventDefault();
-    if (!selectedSection || !feedback.trim() || isRefining) return;
+    if (!feedback.trim()) {
+      alert('Please enter refinement instructions or feedback for the AI.');
+      return;
+    }
+    if (isRefining) return;
     
+    const targetSection = selectedSection || sections[0] || "Whole Report Synthesis";
     setIsRefining(true);
     setRefineSuccess('');
     try {
@@ -111,7 +133,7 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          section: selectedSection,
+          section: targetSection,
           feedback: feedback.trim(),
           report: currentReport,
           sources: sources || []
@@ -120,9 +142,9 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
       const data = await res.json();
       if (data.status === 'success' && data.updated_report) {
         setCurrentReport(data.updated_report);
-        setRefineSuccess(`✓ Section '${selectedSection}' successfully updated!`);
+        setRefineSuccess(`✓ '${targetSection}' successfully refined!`);
         setFeedback('');
-        setTimeout(() => setRefineSuccess(''), 5000);
+        setTimeout(() => setRefineSuccess(''), 6000);
       } else {
         alert(data.message || 'Failed to refine section.');
       }
@@ -354,54 +376,69 @@ export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, 
       </div>
 
       {/* Interactive Section-level Rerun Panel */}
-      {sections.length > 0 && (
-        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--bg-panel-border)', borderRadius: '10px', padding: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <RefreshCw size={14} className={isRefining ? "animate-spin text-indigo-400" : "text-indigo-400"} />
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)' }}>Refine Section-Level Research</span>
-            </div>
-            {refineSuccess && (
-              <span style={{ fontSize: '0.72rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                {refineSuccess}
-              </span>
-            )}
+      <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid var(--bg-panel-border)', borderRadius: '10px', padding: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <RefreshCw size={14} className={isRefining ? "animate-spin text-indigo-400" : "text-indigo-400"} />
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-main)' }}>Refine Research / Specific Section</span>
           </div>
-          
-          <form onSubmit={handleRerun} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <select
-                value={selectedSection}
-                onChange={(e) => setSelectedSection(e.target.value)}
-                style={{ flex: 1, background: 'rgba(2, 6, 23, 0.8)', border: '1px solid var(--bg-panel-border)', color: 'var(--text-main)', padding: '0.5rem', borderRadius: '6px', fontSize: '0.75rem' }}
-                disabled={isRefining || isRunning}
-              >
-                <option value="">-- Choose Section to Redo --</option>
-                {sections.map((sec, idx) => (
-                  <option key={idx} value={sec}>{sec}</option>
-                ))}
-              </select>
-
-              <button
-                type="submit"
-                disabled={isRefining || isRunning || !selectedSection || !feedback.trim()}
-                style={{ background: isRefining ? 'rgba(99, 102, 241, 0.5)' : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: 'white', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: isRefining ? 'wait' : 'pointer' }}
-              >
-                {isRefining ? <RefreshCw size={12} className="animate-spin" /> : <Send size={12} />}
-                <span>{isRefining ? 'Refining...' : 'Submit Refinement'}</span>
-              </button>
-            </div>
-
-            <textarea
-              placeholder="e.g., focus more on local hardware tradeoffs or add performance stats..."
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              style={{ width: '100%', height: '50px', background: 'rgba(2, 6, 23, 0.6)', border: '1px solid var(--bg-panel-border)', color: 'var(--text-main)', padding: '0.5rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', outline: 'none', resize: 'none' }}
-              disabled={isRefining || isRunning || !selectedSection}
-            />
-          </form>
+          {refineSuccess && (
+            <span style={{ fontSize: '0.72rem', color: '#34d399', background: 'rgba(16, 185, 129, 0.15)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+              {refineSuccess}
+            </span>
+          )}
         </div>
-      )}
+        
+        <form onSubmit={handleRerun} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <select
+              value={selectedSection}
+              onChange={(e) => setSelectedSection(e.target.value)}
+              style={{ flex: 1, background: '#090d16', border: '1px solid var(--bg-panel-border)', color: '#f8fafc', padding: '0.5rem', borderRadius: '6px', fontSize: '0.75rem', cursor: 'pointer' }}
+              disabled={isRefining || isRunning}
+            >
+              <option value="Whole Report Synthesis" style={{ background: '#090d16', color: '#38bdf8', fontWeight: 600 }}>
+                ✨ Whole Report Synthesis (Refine All)
+              </option>
+              {sections.map((sec, idx) => (
+                <option key={idx} value={sec} style={{ background: '#090d16', color: '#f8fafc' }}>
+                  {sec}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="submit"
+              disabled={isRefining || isRunning || !feedback.trim()}
+              style={{ 
+                background: isRefining ? 'rgba(99, 102, 241, 0.5)' : !feedback.trim() ? 'rgba(99, 102, 241, 0.2)' : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '6px', 
+                padding: '0.5rem 1.25rem', 
+                fontSize: '0.75rem', 
+                fontWeight: 600, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.35rem', 
+                cursor: isRefining || !feedback.trim() ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              {isRefining ? <RefreshCw size={12} className="animate-spin" /> : <Send size={12} />}
+              <span>{isRefining ? 'Refining...' : 'Submit Refinement'}</span>
+            </button>
+          </div>
+
+          <textarea
+            placeholder="Type instructions here (e.g. Focus more on local hardware tradeoffs, add performance benchmarks, expand technical details)..."
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            style={{ width: '100%', height: '60px', background: 'rgba(2, 6, 23, 0.6)', border: '1px solid var(--bg-panel-border)', color: 'var(--text-main)', padding: '0.5rem 0.75rem', borderRadius: '6px', fontSize: '0.75rem', outline: 'none', resize: 'none' }}
+            disabled={isRefining || isRunning}
+          />
+        </form>
+      </div>
 
       {/* Rendered HTML Report */}
       <div
