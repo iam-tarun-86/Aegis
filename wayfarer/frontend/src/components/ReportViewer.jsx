@@ -64,6 +64,8 @@ export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunni
     );
   }
 
+  const htmlContent = renderCitations(marked(reportText));
+
   // Parse sections (headers starting with ##) for section-level rerun selection
   const sections = [];
   const lines = reportText.split('\n');
@@ -192,6 +194,46 @@ export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunni
           Export Report
         </span>
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+          {/* THE BRIDGE: Hand off to DockMind */}
+          <button
+            onClick={async () => {
+              try {
+                // 1. Generate unique session ID
+                const sessionId = 'wayfarer-' + Math.random().toString(36).substring(2, 9);
+                
+                // 2. Create the session in DockMind
+                await fetch('http://localhost:8001/sessions', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ session_id: sessionId, name: 'Wayfarer Research Report' })
+                });
+
+                // 3. Create a markdown file blob and ingest it
+                const blob = new Blob([reportText], { type: 'text/markdown' });
+                const formData = new FormData();
+                formData.append('file', blob, 'Wayfarer_Research.md');
+                formData.append('session_id', sessionId);
+                
+                await fetch('http://localhost:8001/ingest', {
+                  method: 'POST',
+                  body: formData,
+                });
+
+                // 4. Switch tab via postMessage to Omni Shell
+                window.parent.postMessage({ type: 'SWITCH_TAB', tab: 'chat' }, '*');
+                
+              } catch (e) {
+                console.error("Handoff failed", e);
+                alert("Failed to send to DockMind. Is the backend running on port 8001?");
+              }
+            }}
+            title="Send to DockMind for Q&A"
+            style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '6px', padding: '0.35rem 0.65rem', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer', transition: 'all 0.2s', marginRight: '8px' }}
+          >
+            <Send size={13} />
+            <span>💬 Chat with this Research</span>
+          </button>
+          
           <button
             onClick={handleDownloadPDF}
             title="Export/Save as PDF via browser print"

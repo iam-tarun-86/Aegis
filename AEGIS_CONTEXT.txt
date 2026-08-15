@@ -56,5 +56,8 @@ The following upgrades are planned to maximize robustness:
   - `start_omni.ps1` was created.
 - Phase 2 (Omni App Shell) is COMPLETE.
   - Built a Glassmorphic sidebar and configured dual iframes to flip instantly between Wayfarer (Port 3000) and DockMind (Port 5173).
+- Phase 3 (The Bridge) is COMPLETE.
+  - Added "Chat with this Research" button to Wayfarer.
+  - Wired it to generate a unique session and POST the markdown directly to DockMind's ChromaDB, then trigger an iframe flip via postMessage.
 - The Git Repository was initialized and pushed to GitHub.
-- Next Step: Begin Phase 3 (The Bridge).
+- Next Step: Begin Phase 4 (Wayfarer Upgrades).
