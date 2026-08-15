@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('research');
@@ -7,6 +7,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(20);
   const [statusMessage, setStatusMessage] = useState("Initializing Aegis Neural Subsystems...");
+  
+  const dockmindRef = useRef(null);
 
   useEffect(() => {
     // Step-by-step loading simulation / health polling
@@ -64,6 +66,14 @@ function App() {
         console.log("Omni Shell received handoff, switching to:", event.data.tab);
         if (event.data.tab === 'chat') {
           setActiveTab('chat');
+          
+          // Relay session selection to DockMind iframe
+          if (dockmindRef.current && dockmindRef.current.contentWindow) {
+            dockmindRef.current.contentWindow.postMessage({
+              type: 'SELECT_SESSION',
+              session_id: event.data.session_id
+            }, '*');
+          }
         }
       }
     };
@@ -157,6 +167,7 @@ function App() {
 
         {/* DockMind Iframe (Port 5173) */}
         <iframe 
+          ref={dockmindRef}
           src="http://localhost:5173" 
           className={`omni-iframe ${activeTab === 'chat' ? 'active' : ''}`}
           title="DockMind Chat"

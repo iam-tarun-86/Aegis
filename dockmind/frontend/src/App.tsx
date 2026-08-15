@@ -184,9 +184,42 @@ function App() {
         });
       }
     };
+
+    // Listen for handoff messages from Omni Shell
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.data && (event.data.type === 'SELECT_SESSION' || event.data.type === 'REFRESH_SESSIONS' || event.data.type === 'SWITCH_TAB')) {
+        try {
+          const res = await fetch('http://localhost:8001/sessions');
+          const data = await res.json();
+          setSessions(data);
+          if (event.data.session_id) {
+            setCurrentSessionId(event.data.session_id);
+          } else if (data.length > 0) {
+            setCurrentSessionId(data[0].session_id);
+          }
+        } catch (e) {
+          console.error("Failed to refresh sessions on message", e);
+        }
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    // Refresh when tab gains focus
+    const handleFocus = () => {
+      fetchSessions();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    // Keep sessions synced periodically
+    const syncTimer = setInterval(() => {
+      fetchSessions();
+    }, 2500);
     
     return () => {
       ws.current?.close();
+      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(syncTimer);
     }
   }, []);
 

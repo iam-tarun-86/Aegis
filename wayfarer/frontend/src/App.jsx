@@ -499,6 +499,7 @@ export default function App() {
 
           <div className="panel-body" style={{ flex: 1, overflowY: 'auto', padding: '1.25rem' }}>
             <ReportViewer
+              topic={selectedPastIndex >= 0 ? pastSearches[selectedPastIndex].topic : graphState?.topic}
               reportText={displayReport}
               sources={displaySources}
               onSectionRerun={triggerSectionRerun}

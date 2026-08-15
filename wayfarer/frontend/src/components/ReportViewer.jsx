@@ -36,7 +36,7 @@ function downloadFile(content, filename, contentType) {
   URL.revokeObjectURL(url);
 }
 
-export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunning }) {
+export function ReportViewer({ topic, reportText, sources = [], onSectionRerun, isRunning }) {
   const [selectedSection, setSelectedSection] = useState('');
   const [feedback, setFeedback] = useState('');
 
@@ -207,11 +207,16 @@ export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunni
                 const host = window.location.hostname || 'localhost';
                 const sessionId = 'wayfarer-' + Math.random().toString(36).substring(2, 9);
                 
+                // Formulate smart session name from topic or report title
+                const headerMatch = reportText.match(/^#+\s+(.+)$/m);
+                const rawName = topic || (headerMatch ? headerMatch[1].trim() : 'Research Report');
+                const sessionName = rawName.length > 55 ? rawName.substring(0, 52) + '...' : rawName;
+                
                 // 1. Create the session in DockMind
                 const sessRes = await fetch(`http://${host}:8001/sessions`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ session_id: sessionId, name: 'Wayfarer Research Report' })
+                  body: JSON.stringify({ session_id: sessionId, name: sessionName })
                 });
 
                 if (!sessRes.ok) {
@@ -219,9 +224,10 @@ export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunni
                 }
 
                 // 2. Create a markdown file blob and ingest it
+                const filename = (sessionName.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 32) || 'Research_Report') + '.md';
                 const blob = new Blob([reportText], { type: 'text/markdown' });
                 const formData = new FormData();
-                formData.append('file', blob, 'Wayfarer_Research.md');
+                formData.append('file', blob, filename);
                 formData.append('session_id', sessionId);
                 
                 const ingestRes = await fetch(`http://${host}:8001/ingest`, {
@@ -233,8 +239,8 @@ export function ReportViewer({ reportText, sources = [], onSectionRerun, isRunni
                   throw new Error(`Failed to ingest report into DockMind (HTTP ${ingestRes.status})`);
                 }
 
-                // 3. Switch tab via postMessage to Omni Shell
-                window.parent.postMessage({ type: 'SWITCH_TAB', tab: 'chat' }, '*');
+                // 3. Switch tab via postMessage to Omni Shell with the exact session_id
+                window.parent.postMessage({ type: 'SWITCH_TAB', tab: 'chat', session_id: sessionId }, '*');
                 
               } catch (err) {
                 console.error("Handoff failed:", err);
