@@ -1,26 +1,23 @@
-# 🌌 AEGIS
-
 <div align="center">
 
-```
-     █████╗ ███████╗ ██████╗ ██╗███████╗
-    ██╔══██╗██╔════╝██╔════╝ ██║██╔════╝
-    ███████║█████╗  ██║  ███╗██║███████╗
-    ██╔══██║██╔══╝  ██║   ██║██║╚════██║
-    ██║  ██║███████╗╚██████╔╝██║███████║
-    ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝
-```
+  <img src="assets/aegis-logo.svg" alt="Aegis Quantum Singularity Nexus Logo" width="115" height="115" />
 
-**Autonomous Deep Research & Local-First Document Intelligence Nexus**
+  <h1 align="center">AEGIS</h1>
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite_5-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
-[![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-FF6600?style=for-the-badge&logo=databricks&logoColor=white)](https://www.trychroma.com/)
-[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
-[![Docling](https://img.shields.io/badge/Docling-Parser-blueviolet?style=for-the-badge)](https://github.com/DS4SD/docling)
-[![Local LLM](https://img.shields.io/badge/100%25_Offline-Local_GGUF-purple?style=for-the-badge)](https://github.com/ggerganov/llama.cpp)
+  <p align="center">
+    <strong>Autonomous Deep Research & Local-First Document Intelligence Nexus</strong>
+  </p>
+
+  <p align="center">
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" /></a>
+    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React 18" /></a>
+    <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite_5-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite 5" /></a>
+    <a href="https://langchain-ai.github.io/langgraph/"><img src="https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white" alt="LangGraph" /></a>
+    <a href="https://www.trychroma.com/"><img src="https://img.shields.io/badge/ChromaDB-FF6600?style=for-the-badge&logo=databricks&logoColor=white" alt="ChromaDB" /></a>
+    <a href="https://playwright.dev/"><img src="https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white" alt="Playwright" /></a>
+    <a href="https://github.com/DS4SD/docling"><img src="https://img.shields.io/badge/Docling-Parser-blueviolet?style=for-the-badge" alt="Docling" /></a>
+    <a href="https://github.com/ggerganov/llama.cpp"><img src="https://img.shields.io/badge/100%25_Offline-Local_GGUF-purple?style=for-the-badge" alt="Local GGUF" /></a>
+  </p>
 
 </div>
 

@@ -1,0 +1,48 @@
+<svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aegisNexusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="35%" stop-color="#38bdf8" />
+      <stop offset="70%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+    <linearGradient id="aegisCoreCrystal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <radialGradient id="plasmaFlare" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ec4899" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#8b5cf6" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#00f2fe" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <circle cx="50" cy="50" r="44" fill="url(#plasmaFlare)" opacity="0.4" />
+
+  <polygon points="50,6 88,28 88,72 50,94 12,72 12,28" stroke="url(#aegisNexusGrad)" stroke-width="2" fill="#070b14" fill-opacity="0.9" stroke-dasharray="4 2" />
+
+  <ellipse cx="50" cy="50" rx="38" ry="14" stroke="#00f2fe" stroke-width="1.6" transform="rotate(-28 50 50)" opacity="0.85" />
+  <ellipse cx="50" cy="50" rx="38" ry="14" stroke="#c084fc" stroke-width="1.6" transform="rotate(38 50 50)" opacity="0.85" />
+
+  <polygon points="50,18 78,50 50,82 22,50" stroke="url(#aegisNexusGrad)" stroke-width="2" fill="#0c1222" fill-opacity="0.9" />
+
+  <line x1="50" y1="18" x2="50" y2="82" stroke="#38bdf8" stroke-width="1.2" opacity="0.75" />
+  <line x1="22" y1="50" x2="78" y2="50" stroke="#38bdf8" stroke-width="1.2" opacity="0.75" />
+  <line x1="36" y1="34" x2="64" y2="66" stroke="#818cf8" stroke-width="1" opacity="0.6" />
+  <line x1="36" y1="66" x2="64" y2="34" stroke="#818cf8" stroke-width="1" opacity="0.6" />
+
+  <circle cx="50" cy="50" r="8" fill="url(#aegisCoreCrystal)" />
+  <circle cx="50" cy="50" r="3.5" fill="#ffffff" />
+
+  <circle cx="50" cy="6" r="2.5" fill="#00f2fe" />
+  <circle cx="88" cy="28" r="2" fill="#38bdf8" />
+  <circle cx="88" cy="72" r="2" fill="#818cf8" />
+  <circle cx="50" cy="94" r="2.5" fill="#c084fc" />
+  <circle cx="12" cy="72" r="2" fill="#818cf8" />
+  <circle cx="12" cy="28" r="2" fill="#38bdf8" />
+  <circle cx="50" cy="18" r="2.2" fill="#ffffff" />
+  <circle cx="78" cy="50" r="2.2" fill="#00f2fe" />
+  <circle cx="50" cy="82" r="2.2" fill="#c084fc" />
+  <circle cx="22" cy="50" r="2.2" fill="#38bdf8" />
+</svg>
