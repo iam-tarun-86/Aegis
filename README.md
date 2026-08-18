@@ -1,0 +1,233 @@
+# 🛡️ AEGIS
+
+<div align="center">
+
+```
+     █████╗ ███████╗ ██████╗ ██╗███████╗
+    ██╔══██╗██╔════╝██╔════╝ ██║██╔════╝
+    ███████║█████╗  ██║  ███╗██║███████╗
+    ██╔══██║██╔══╝  ██║   ██║██║╚════██║
+    ██║  ██║███████╗╚██████╔╝██║███████║
+    ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝
+```
+
+**Autonomous Deep Research & Local-First Document Intelligence System**
+
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite_5-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-FF6600?style=for-the-badge&logo=databricks&logoColor=white)](https://www.trychroma.com/)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Local LLM](https://img.shields.io/badge/100%25_Offline-Local_GGUF-purple?style=for-the-badge)](https://github.com/ggerganov/llama.cpp)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**Aegis** is an enterprise-grade, 100% offline and local-first AI system combining autonomous multi-agent deep research with document intelligence and vector RAG (Retrieval-Augmented Generation). 
+
+Designed to run completely private on local consumer hardware (e.g., RTX 4060 8GB VRAM / 24GB RAM with local GGUF models like `Gemma 4 e4b` or via NVIDIA NIM Cloud endpoints), Aegis eliminates cloud dependencies, data leakage, and SaaS subscription costs while delivering deep academic research synthesis and document query capabilities.
+
+---
+
+## 🏛️ System Architecture
+
+Aegis is engineered with an **Omni Microservice Architecture** that isolates UI frameworks to prevent styling collisions while offering seamless inter-process communication:
+
+```mermaid
+graph TD
+    User([User Browser]) <-->|Port 3050| OmniShell[Omni App Shell: Glassmorphic Hub]
+    
+    subgraph OmniShell [Omni Shell Host]
+        direction TB
+        TabResearch[Deep Research View]
+        TabChat[Document Chat View]
+    end
+
+    subgraph WayfarerSystem [Wayfarer Subsystem]
+        UI_Wayfarer[Wayfarer UI - Port 3000<br/>3D Cinematic Space View & Recon HUD]
+        BE_Wayfarer[Wayfarer Backend - Port 8000<br/>LangGraph Multi-Agent Engine]
+        Playwright[Playwright Turbo Scraper & DuckDuckGo Search]
+        DB_Wayfarer[(SQLite Research History)]
+        
+        UI_Wayfarer <-->|WebSocket / REST| BE_Wayfarer
+        BE_Wayfarer <--> Playwright
+        BE_Wayfarer <--> DB_Wayfarer
+    end
+
+    subgraph DockMindSystem [DockMind Subsystem]
+        UI_DockMind[DockMind UI - Port 5173<br/>Multi-Session RAG Workbench]
+        BE_DockMind[DockMind Backend - Port 8001<br/>Docling Parser & ChromaDB RAG]
+        VectorDB[(ChromaDB: nomic-embed-text-v1.5)]
+        DB_DockMind[(SQLite Chat History & Sessions)]
+        
+        UI_DockMind <-->|REST & WebSockets| BE_DockMind
+        BE_DockMind <--> VectorDB
+        BE_DockMind <--> DB_DockMind
+    end
+
+    subgraph LLM_Engine [Local Inference Engine]
+        LlamaServer[llama.cpp / Local GGUF Endpoint - Port 8085<br/>e.g. Gemma 4 E4B]
+    end
+
+    OmniShell -->|Preloaded Iframe| UI_Wayfarer
+    OmniShell -->|Preloaded Iframe| UI_DockMind
+    
+    %% Neural Bridge Handoff
+    UI_Wayfarer -.->|1-Click 'Chat with Research' POST /ingest| BE_DockMind
+    UI_Wayfarer -.->|postMessage SWITCH_TAB| OmniShell
+    OmniShell -.->|postMessage SELECT_SESSION| UI_DockMind
+
+    BE_Wayfarer <-->|Completions| LlamaServer
+    BE_DockMind <-->|Completions| LlamaServer
+```
+
+---
+
+## ⚡ Key Features
+
+### 🌌 1. Wayfarer Deep Research Console
+- **LangGraph Multi-Agent Architecture**: Autonomous orchestration between **Planner**, **Researcher**, **Critic**, and **Writer** nodes.
+- **3D Solar System & Reconnaissance HUD**: Live Three.js cinematic space visualizer tracking active probes, planetary round progress, live search queries, and scraped URLs in real time.
+- **Turbo Headless Web Extraction**: Powered by Playwright Chromium and DuckDuckGo search for rapid web harvesting.
+- **Interactive Section-Level Refinement**: In-place research refinement (`/api/refine-section`) allowing users to rewrite and expand specific sections with custom instructions without restarting the entire research loop.
+- **Persistent History & Formats**: SQLite storage for research sessions with instant downloads in Markdown, HTML, Plain Text, and DOC.
+
+### 🧠 2. DockMind Document Intelligence & RAG
+- **Elite Docling Parsing**: High-fidelity document parsing for PDFs, DOCX, TXT, and Markdown files with preserved tables, hierarchy, and equations.
+- **Dense Vector Search**: Powered by ChromaDB with `nomic-embed-text-v1.5` embeddings and semantic chunk boundaries (1500 chars).
+- **Multi-Session Chat & Memory**: SQLite session and message tracking with full chat persistence across restarts.
+- **Pure Local LLM Support**: Optimized prompt templates with repetition mitigation for local small and reasoning LLMs.
+
+### 🌉 3. The Neural Bridge
+- **Instant Research Handoff**: Click **"Chat with this Research"** inside Wayfarer to automatically create a named session in DockMind, parse and vector-index the Markdown report into ChromaDB, and focus the chat tab in zero milliseconds.
+
+---
+
+## 🔌 Port Mapping & Services
+
+| Service | Port | Description | Technology |
+|---|---|---|---|
+| **Omni App Shell** | `3050` | Glassmorphic Master Container | Vite + React |
+| **Wayfarer Frontend** | `3000` | Research Visualizer & HUD | Vite + React + Three.js |
+| **Wayfarer Backend** | `8000` | Multi-Agent Research Graph | FastAPI + LangGraph + Playwright |
+| **DockMind Frontend** | `5173` | RAG Chat Workspace | Vite + React + TypeScript + Tailwind |
+| **DockMind Backend** | `8001` | Document Parsing & RAG | FastAPI + Docling + ChromaDB |
+| **LLM Server (Local)** | `8085` | Local Inference Endpoint | `llama-server` / OpenAI API |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** v18+ and **npm**
+- **Python** 3.10+
+- **Playwright Chromium**:
+  ```bash
+  python -m playwright install chromium
+  ```
+- **Local LLM Server** (Optional if using NVIDIA NIM):
+  - Run `llama-server` with your model on `http://localhost:8085/v1`
+
+---
+
+### Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/iam-tarun-86/Aegis.git
+   cd Aegis
+   ```
+
+2. **Install Frontend Dependencies**:
+   ```bash
+   # Omni Shell
+   cd omni_shell && npm install && cd ..
+   
+   # Wayfarer UI
+   cd wayfarer/frontend && npm install && cd ..
+   
+   # DockMind UI
+   cd dockmind/frontend && npm install && cd ..
+   ```
+
+3. **Install Python Backend Dependencies**:
+   ```bash
+   pip install fastapi uvicorn requests langchain-core langgraph duckduckgo-search playwright chromadb docling sentence-transformers pydantic
+   ```
+
+---
+
+### Launching Aegis
+
+Run the master background startup script in PowerShell:
+
+```powershell
+.\start_omni.ps1
+```
+
+> **Tip**: To view active terminal windows for all 5 servers during development or debugging, run:
+> ```powershell
+> .\start_omni.ps1 -ShowWindows
+> ```
+
+Open your browser and navigate to:
+👉 **[http://localhost:3050](http://localhost:3050)**
+
+---
+
+## 🛠️ Configuration
+
+### Local vs Cloud Inference
+- **Local Mode (Default)**: Set your local inference endpoint in `wayfarer/backend/app/config.py` and `dockmind/backend/llm.py` (defaults to `http://localhost:8085/v1`).
+- **NVIDIA NIM Cloud Mode (Optional)**: Add your NVIDIA API key in `wayfarer/backend/.env`:
+  ```env
+  NVIDIA_API_KEY=nvapi-your-key-here
+  ```
+
+---
+
+## 📂 Project Structure
+
+```
+Aegis/
+├── AEGIS_CONTEXT.txt            # Master architectural reference file
+├── start_omni.ps1               # One-click startup orchestrator
+│
+├── omni_shell/                  # Port 3050: Master App Shell
+│   └── src/
+│       ├── components/AegisLogo.jsx
+│       ├── App.jsx
+│       └── index.css
+│
+├── wayfarer/                    # Deep Research Subsystem
+│   ├── frontend/                # Port 3000: React + Three.js UI
+│   └── backend/                 # Port 8000: FastAPI + LangGraph
+│       └── app/
+│           ├── agents/          # Planner, Researcher, Critic, Writer
+│           ├── tools/           # DuckDuckGo, Playwright, LLM Client
+│           └── main.py          # WebSocket & REST APIs
+│
+└── dockmind/                    # Document RAG Subsystem
+    ├── frontend/                # Port 5173: React + TS RAG Chat
+    └── backend/                 # Port 8001: FastAPI + ChromaDB
+        ├── db.py                # SQLite & ChromaDB setup
+        ├── ingest.py            # Docling document parser
+        ├── llm.py               # Local LLM completion handler
+        └── main.py              # Session & Chat APIs
+```
+
+---
+
+## 🛡️ License
+
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+---
+
+<div align="center">
+  <sub>Engineered by Tarun | Powered by LangGraph, Docling & ChromaDB</sub>
+</div>
