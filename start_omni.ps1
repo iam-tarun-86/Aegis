@@ -4,11 +4,33 @@ param(
 )
 
 Write-Host "=============================================" -ForegroundColor Cyan
-Write-Host "🌌 Starting Project Omni (Windows Native)" -ForegroundColor Cyan
+Write-Host "⚛️  Starting Aegis Intelligence Nexus (Windows Native)" -ForegroundColor Cyan
 Write-Host "=============================================" -ForegroundColor Cyan
 
 $scriptPath = $PSScriptRoot
 $processes = @()
+$targetPorts = @(3050, 3000, 8000, 5173, 8001)
+
+function Stop-AegisPorts {
+    param([int[]]$Ports)
+    foreach ($port in $Ports) {
+        try {
+            $conns = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue
+            if ($conns) {
+                foreach ($conn in $conns) {
+                    if ($conn.OwningProcess -gt 0 -and $conn.OwningProcess -ne $PID) {
+                        Write-Host "  -> Releasing Port $port (Terminating PID: $($conn.OwningProcess))..." -ForegroundColor DarkYellow
+                        Stop-Process -Id $conn.OwningProcess -Force -ErrorAction SilentlyContinue
+                    }
+                }
+            }
+        } catch {}
+    }
+}
+
+# Pre-flight check: Clean up any lingering processes on Aegis ports
+Write-Host "Checking for lingering processes on Aegis ports..." -ForegroundColor DarkGray
+Stop-AegisPorts -Ports $targetPorts
 
 function Start-Server {
     param(
@@ -42,30 +64,35 @@ try {
     Write-Host ""
     Write-Host "=============================================" -ForegroundColor Cyan
     if ($ShowWindows) {
-        Write-Host "🚀 Omni System is active in separate windows!" -ForegroundColor Green
+        Write-Host "🚀 Aegis System is active in separate windows!" -ForegroundColor Green
     } else {
-        Write-Host "🚀 Omni System is running silently in the background!" -ForegroundColor Green
+        Write-Host "🚀 Aegis System is running silently in the background!" -ForegroundColor Green
         Write-Host "   (Pass '-ShowWindows' if you ever want visible terminal windows for debugging)" -ForegroundColor DarkGray
     }
-    Write-Host "   - Omni Shell: http://localhost:3050"
-    Write-Host "   - Wayfarer UI: http://localhost:3000"
-    Write-Host "   - DockMind UI: http://localhost:5173"
+    Write-Host "   - Omni Launchpad: http://localhost:3050" -ForegroundColor White
+    Write-Host "   - Wayfarer UI:   http://localhost:3000" -ForegroundColor DarkCyan
+    Write-Host "   - DockMind UI:   http://localhost:5173" -ForegroundColor DarkGreen
     Write-Host ""
-    Write-Host "Press Ctrl+C in this terminal to safely shut down all 5 servers." -ForegroundColor Yellow
+    Write-Host "👉 Press Ctrl+C in this terminal to safely shut down all 5 servers and free all ports." -ForegroundColor Yellow
     Write-Host "=============================================" -ForegroundColor Cyan
 
-    # Wait indefinitely until Ctrl+C
+    # Keep script alive and responsive to Ctrl+C
     while ($true) {
         Start-Sleep -Seconds 1
     }
 }
 finally {
-    Write-Host "`nShutting down all Omni servers..." -ForegroundColor Red
+    Write-Host "`n🛑 Shutting down all Aegis servers and freeing ports..." -ForegroundColor Red
+    
+    # 1. Kill process tree for spawned PowerShell instances
     foreach ($proc in $processes) {
         if (-not $proc.HasExited) {
-            # taskkill with /T (Tree) ensures child node/python processes are killed too
-            taskkill /PID $proc.Id /T /F | Out-Null
+            taskkill /PID $proc.Id /T /F 2>$null | Out-Null
         }
     }
-    Write-Host "All servers stopped." -ForegroundColor Green
+
+    # 2. Direct TCP connection purge: ensure ports 3050, 3000, 8000, 5173, 8001 are guaranteed free
+    Stop-AegisPorts -Ports $targetPorts
+
+    Write-Host "✅ All 5 Aegis servers stopped and ports (3050, 3000, 8000, 5173, 8001) successfully freed!" -ForegroundColor Green
 }
