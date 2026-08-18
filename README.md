@@ -1,4 +1,4 @@
-# 🛡️ AEGIS
+# 🌌 AEGIS
 
 <div align="center">
 
@@ -11,7 +11,7 @@
     ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝╚══════╝
 ```
 
-**Autonomous Deep Research & Local-First Document Intelligence System**
+**Autonomous Deep Research & Local-First Document Intelligence Nexus**
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
@@ -19,6 +19,7 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://langchain-ai.github.io/langgraph/)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-FF6600?style=for-the-badge&logo=databricks&logoColor=white)](https://www.trychroma.com/)
 [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![Docling](https://img.shields.io/badge/Docling-Parser-blueviolet?style=for-the-badge)](https://github.com/DS4SD/docling)
 [![Local LLM](https://img.shields.io/badge/100%25_Offline-Local_GGUF-purple?style=for-the-badge)](https://github.com/ggerganov/llama.cpp)
 
 </div>
@@ -27,9 +28,44 @@
 
 ## 🌟 Overview
 
-**Aegis** is an enterprise-grade, 100% offline and local-first AI system combining autonomous multi-agent deep research with document intelligence and vector RAG (Retrieval-Augmented Generation). 
+**Aegis** is an enterprise-grade, 100% offline and local-first AI intelligence nexus combining autonomous multi-agent deep research with document intelligence and dense vector RAG (Retrieval-Augmented Generation). 
 
 Designed to run completely private on local consumer hardware (e.g., RTX 4060 8GB VRAM / 24GB RAM with local GGUF models like `Gemma 4 e4b` or via NVIDIA NIM Cloud endpoints), Aegis eliminates cloud dependencies, data leakage, and SaaS subscription costs while delivering deep academic research synthesis and document query capabilities.
+
+---
+
+## 🧭 User Experience Flow
+
+```
+                                    +-----------------------+
+                                    |     AEGIS NEXUS       |
+                                    |  (Initial Launchpad)  |
+                                    +-----------+-----------+
+                                                |
+                       +------------------------+------------------------+
+                       |                                                 |
+                       v                                                 v
+           [ KEY: 1 ] Click                                  [ KEY: 2 ] Click
+        +----------------------+                          +----------------------+
+        | 🌌 WAYFARER          |                          | 🧠 DOCKMIND          |
+        | Deep Research Engine |                          | Document RAG Chat    |
+        +----------+-----------+                          +----------+-----------+
+                   |                                                 |
+                   +------------------------+------------------------+
+                                            |
+                                            v
+                               +-------------------------+
+                               | In-App Slide-Out Drawer |
+                               |  - [1] Switch Wayfarer  |
+                               |  - [2] Switch DockMind  |
+                               |  - [H] Return Launchpad |
+                               |  - [Esc] Fullscreen     |
+                               +-------------------------+
+```
+
+1. **Initial Portal Launchpad**: On boot, Aegis greets you with a clean, maximalist welcome hub featuring **only the 2 core hero options**: **Wayfarer** and **DockMind**.
+2. **Dedicated Fullscreen Workspace**: Selecting an app launches into a full-bleed `100vw x 100vh` workspace without any obstructive static sidebars or top headers.
+3. **Slide-Out Navigation Drawer**: A subtle cyber pill trigger `[ ✦ AEGIS / AppName ▼ ]` on the top-left edge slides out a sleek glassmorphic navigation drawer for instantaneous app switching or returning home.
 
 ---
 
@@ -39,16 +75,18 @@ Aegis is engineered with an **Omni Microservice Architecture** that isolates UI 
 
 ```mermaid
 graph TD
-    User([User Browser]) <-->|Port 3050| OmniShell[Omni App Shell: Glassmorphic Hub]
+    User([User Browser]) <-->|Port 3050| OmniShell[Omni App Shell: Quantum Launchpad & Slide Drawer]
     
     subgraph OmniShell [Omni Shell Host]
         direction TB
-        TabResearch[Deep Research View]
-        TabChat[Document Chat View]
+        Launchpad[2-Option Portal Launchpad]
+        SlideDrawer[Slide-Out Nav Drawer]
+        TabResearch[Wayfarer Fullscreen Frame]
+        TabChat[DockMind Fullscreen Frame]
     end
 
     subgraph WayfarerSystem [Wayfarer Subsystem]
-        UI_Wayfarer[Wayfarer UI - Port 3000<br/>3D Cinematic Space View & Recon HUD]
+        UI_Wayfarer[Wayfarer UI - Port 3000<br/>3D Space Visualizer & Recon HUD]
         BE_Wayfarer[Wayfarer Backend - Port 8000<br/>LangGraph Multi-Agent Engine]
         Playwright[Playwright Turbo Scraper & DuckDuckGo Search]
         DB_Wayfarer[(SQLite Research History)]
@@ -91,9 +129,9 @@ graph TD
 
 ### 🌌 1. Wayfarer Deep Research Console
 - **LangGraph Multi-Agent Architecture**: Autonomous orchestration between **Planner**, **Researcher**, **Critic**, and **Writer** nodes.
-- **3D Solar System & Reconnaissance HUD**: Live Three.js cinematic space visualizer tracking active probes, planetary round progress, live search queries, and scraped URLs in real time.
+- **3D Celestial Astrolabe & Reconnaissance HUD**: Live Three.js cinematic space visualizer tracking active probes, planetary round progress, live search queries, and scraped URLs in real time.
 - **Turbo Headless Web Extraction**: Powered by Playwright Chromium and DuckDuckGo search for rapid web harvesting.
-- **Interactive Section-Level Refinement**: In-place research refinement (`/api/refine-section`) allowing users to rewrite and expand specific sections with custom instructions without restarting the entire research loop.
+- **Interactive Section-Level Refinement**: In-place research refinement (`/api/refine-section`) allowing users to rewrite and expand specific sections (or the entire report) with custom instructions without restarting the entire research loop.
 - **Persistent History & Formats**: SQLite storage for research sessions with instant downloads in Markdown, HTML, Plain Text, and DOC.
 
 ### 🧠 2. DockMind Document Intelligence & RAG
@@ -107,11 +145,22 @@ graph TD
 
 ---
 
+## 🎮 Global Keyboard Shortcuts
+
+| Key | Action |
+|---|---|
+| **`1`** | Instantly launch / switch to **Wayfarer Deep Research** |
+| **`2`** | Instantly launch / switch to **DockMind Document Chat** |
+| **`H`** | Return to the **Portal Launchpad** (Home Hub) |
+| **`Esc`** | Close the slide-out navigation drawer and return to fullscreen |
+
+---
+
 ## 🔌 Port Mapping & Services
 
 | Service | Port | Description | Technology |
 |---|---|---|---|
-| **Omni App Shell** | `3050` | Glassmorphic Master Container | Vite + React |
+| **Omni App Shell** | `3050` | Quantum Launchpad & Slide Drawer | Vite + React |
 | **Wayfarer Frontend** | `3000` | Research Visualizer & HUD | Vite + React + Three.js |
 | **Wayfarer Backend** | `8000` | Multi-Agent Research Graph | FastAPI + LangGraph + Playwright |
 | **DockMind Frontend** | `5173` | RAG Chat Workspace | Vite + React + TypeScript + Tailwind |
@@ -195,11 +244,15 @@ Open your browser and navigate to:
 ```
 Aegis/
 ├── AEGIS_CONTEXT.txt            # Master architectural reference file
+├── README.md                    # System documentation & quickstart guide
 ├── start_omni.ps1               # One-click startup orchestrator
 │
 ├── omni_shell/                  # Port 3050: Master App Shell
 │   └── src/
-│       ├── components/AegisLogo.jsx
+│       ├── components/
+│       │   ├── AegisLogo.jsx         # Quantum Singularity Nexus emblem
+│       │   ├── PortalLaunchpad.jsx   # Initial 2-option welcome dashboard
+│       │   └── SlideNavDrawer.jsx    # Non-obstructive slide-out app drawer
 │       ├── App.jsx
 │       └── index.css
 │
@@ -209,7 +262,7 @@ Aegis/
 │       └── app/
 │           ├── agents/          # Planner, Researcher, Critic, Writer
 │           ├── tools/           # DuckDuckGo, Playwright, LLM Client
-│           └── main.py          # WebSocket & REST APIs
+│           └── main.py          # WebSocket & REST APIs (/api/refine-section)
 │
 └── dockmind/                    # Document RAG Subsystem
     ├── frontend/                # Port 5173: React + TS RAG Chat
