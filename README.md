@@ -124,20 +124,20 @@ graph TD
 
 ## ⚡ Key Features
 
-### 🌌 1. Wayfarer Deep Research Console
+### <img src="assets/wayfarer-logo.svg" width="22" height="22" valign="middle" /> 1. Wayfarer Deep Research Console
 - **LangGraph Multi-Agent Architecture**: Autonomous orchestration between **Planner**, **Researcher**, **Critic**, and **Writer** nodes.
 - **3D Celestial Astrolabe & Reconnaissance HUD**: Live Three.js cinematic space visualizer tracking active probes, planetary round progress, live search queries, and scraped URLs in real time.
 - **Turbo Headless Web Extraction**: Powered by Playwright Chromium and DuckDuckGo search for rapid web harvesting.
 - **Interactive Section-Level Refinement**: In-place research refinement (`/api/refine-section`) allowing users to rewrite and expand specific sections (or the entire report) with custom instructions without restarting the entire research loop.
 - **Persistent History & Formats**: SQLite storage for research sessions with instant downloads in Markdown, HTML, Plain Text, and DOC.
 
-### 🧠 2. DockMind Document Intelligence & RAG
+### <img src="assets/dockmind-logo.svg" width="22" height="22" valign="middle" /> 2. DockMind Document Intelligence & RAG
 - **Elite Docling Parsing**: High-fidelity document parsing for PDFs, DOCX, TXT, and Markdown files with preserved tables, hierarchy, and equations.
 - **Dense Vector Search**: Powered by ChromaDB with `nomic-embed-text-v1.5` embeddings and semantic chunk boundaries (1500 chars).
 - **Multi-Session Chat & Memory**: SQLite session and message tracking with full chat persistence across restarts.
 - **Pure Local LLM Support**: Optimized prompt templates with repetition mitigation for local small and reasoning LLMs.
 
-### 🌉 3. The Neural Bridge
+### <img src="assets/aegis-logo.svg" width="22" height="22" valign="middle" /> 3. The Neural Bridge
 - **Instant Research Handoff**: Click **"Chat with this Research"** inside Wayfarer to automatically create a named session in DockMind, parse and vector-index the Markdown report into ChromaDB, and focus the chat tab in zero milliseconds.
 
 ---

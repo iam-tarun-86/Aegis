@@ -1,0 +1,41 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dmCortexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <radialGradient id="dmCortexCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#10b981" stop-opacity="0.9" />
+      <stop offset="80%" stop-color="#047857" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#070b14" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Ambient Synaptic Glow -->
+  <circle cx="50" cy="50" r="44" fill="url(#dmCortexCore)" />
+
+  <!-- Isometric Vector Hypercube Frame -->
+  <polygon points="50,10 84,28 84,68 50,86 16,68 16,28" stroke="url(#dmCortexGrad)" stroke-width="2" fill="#06121a" fill-opacity="0.85" />
+  
+  <!-- Internal Data Lattice Connectors -->
+  <line x1="50" y1="10" x2="50" y2="50" stroke="#10b981" stroke-width="1.6" opacity="0.9" />
+  <line x1="84" y1="28" x2="50" y2="50" stroke="#06b6d4" stroke-width="1.6" opacity="0.9" />
+  <line x1="84" y1="68" x2="50" y2="50" stroke="#8b5cf6" stroke-width="1.6" opacity="0.9" />
+  <line x1="50" y1="86" x2="50" y2="50" stroke="#10b981" stroke-width="1.6" opacity="0.9" />
+  <line x1="16" y1="68" x2="50" y2="50" stroke="#06b6d4" stroke-width="1.6" opacity="0.9" />
+  <line x1="16" y1="28" x2="50" y2="50" stroke="#8b5cf6" stroke-width="1.6" opacity="0.9" />
+
+  <!-- Synaptic Vector Nodes -->
+  <circle cx="50" cy="10" r="3.5" fill="#10b981" />
+  <circle cx="84" cy="28" r="3.5" fill="#06b6d4" />
+  <circle cx="84" cy="68" r="3.5" fill="#8b5cf6" />
+  <circle cx="50" cy="86" r="3.5" fill="#10b981" />
+  <circle cx="16" cy="68" r="3.5" fill="#06b6d4" />
+  <circle cx="16" cy="28" r="3.5" fill="#8b5cf6" />
+
+  <!-- Luminous Central Knowledge Singularity -->
+  <circle cx="50" cy="50" r="10" fill="#ffffff" />
+  <circle cx="50" cy="50" r="14" stroke="#10b981" stroke-width="1.5" opacity="0.8" />
+</svg>

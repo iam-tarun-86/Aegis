@@ -10,7 +10,7 @@ import { ReasoningSidebar } from './components/ReasoningSidebar';
 import { NetworkActivity } from './components/NetworkActivity';
 import { QuickChat } from './components/QuickChat';
 import { PastSearches } from './components/PastSearches';
-import { AegisLogo } from './components/AegisLogo';
+import { WayfarerLogo } from './components/WayfarerLogo';
 
 export default function App() {
   const {
@@ -313,7 +313,7 @@ export default function App() {
       {/* Top Header Bar */}
       <header className="app-header" style={{ flexShrink: 0 }}>
         <div className="brand-title" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-          <AegisLogo size={24} />
+          <WayfarerLogo size={26} />
           <span style={{ fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(to right, #ffffff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Wayfarer
           </span>
