@@ -1,0 +1,16 @@
+# AI Agent Local Context (Local only, not pushed to GitHub)
+AEGIS_CONTEXT.txt
+
+# Node modules & builds
+node_modules/
+dist/
+.vite/
+
+# Python & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+*.db
+chroma_db/
