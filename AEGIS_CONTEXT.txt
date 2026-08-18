@@ -83,13 +83,12 @@ The following upgrades are planned to maximize robustness:
   - All 5 microservices verified and pushed to GitHub main repository.
 - Phase 9 (Documentation & Repository Assets) is COMPLETE.
   - Authored comprehensive project `README.md` with system architecture diagrams, microservice port matrix, quick start guide, and feature walkthrough.
-- Phase 10 (Maximalist Command Dock & Quantum Singularity Identity) is COMPLETE.
-  - Completely eliminated the narrow 260px static left sidebar, unlocking full 100vw x 100vh unobstructed viewport for 3D space visualizer and document chat.
-  - Replaced the security shield theme with the **Aegis Quantum Singularity Nexus** logo (multi-dimensional celestial astrolabe, glowing hyper-prism, chromatic dispersion, and neural core).
-  - Built a floating glassmorphic **Maximalist Command Dock** (`NavigationDock.jsx`) featuring two large animated interactive app portals:
-    1. 🌌 **WAYFARER**: Animated rotating gyro rings, radar sweeps, and orbiting planetary probes.
-    2. 🧠 **DOCKMIND**: Animated isometric vector hyper-cube, pulsing synaptic circuits, and neural nodes.
-  - Added instant keyboard shortcuts (`[1]` for Wayfarer, `[2]` for DockMind) with real-time active laser indicators.
+- Phase 11 (2-Option Initial Launchpad & Slide-Out Nav Drawer) is COMPLETE.
+  - Implemented the initial Welcome Launchpad (`PortalLaunchpad.jsx`): on first load, shows strictly the 2 big hero portals (Wayfarer & DockMind) with feature pills, animated SVGs, and direct "ENTER" buttons.
+  - Implemented non-obtrusive in-app navigation (`SlideNavDrawer.jsx`): when inside Wayfarer or DockMind, a subtle floating pill trigger (`[ ✦ AEGIS / AppName ]`) rests at the top-left edge without overlapping app controls.
+  - Clicking the trigger smoothly slides out the maximalist navigation drawer from the left to switch apps or return to the 2-option launchpad (`⌂ Return to Portal Launchpad`).
+  - Added global keyboard shortcuts: `[1]` for Wayfarer, `[2]` for DockMind, `[H]` or `[Esc]` for Launchpad / Drawer.
+
 
 
 

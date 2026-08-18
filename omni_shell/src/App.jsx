@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { AegisLogo } from './components/AegisLogo';
-import { NavigationDock } from './components/NavigationDock';
+import { PortalLaunchpad } from './components/PortalLaunchpad';
+import { SlideNavDrawer } from './components/SlideNavDrawer';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('research');
+  // When first opened, activeTab is null (showing only the 2 launchpad options: Wayfarer & DockMind)
+  const [activeTab, setActiveTab] = useState(null);
   const [wayfarerReady, setWayfarerReady] = useState(false);
   const [dockmindReady, setDockmindReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -12,10 +14,9 @@ function App() {
   
   const dockmindRef = useRef(null);
 
-  // Keyboard shortcut listener for instantaneous switching ([1] Wayfarer, [2] DockMind)
+  // Keyboard shortcuts ([1] Wayfarer, [2] DockMind, [H] Launchpad)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't trigger if user is typing in an active input/textarea
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
         return;
       }
@@ -23,6 +24,8 @@ function App() {
         setActiveTab('research');
       } else if (e.key === '2') {
         setActiveTab('chat');
+      } else if (e.key === 'h' || e.key === 'H') {
+        setActiveTab(null);
       }
     };
 
@@ -31,7 +34,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Step-by-step loading simulation / health polling
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev < 80) return prev + 15;
@@ -51,7 +53,6 @@ function App() {
       setStatusMessage("Synchronizing Vector Embeddings & Neural Handoff Bridge...");
     }, 1800);
 
-    // Max fallback safety timeout so loading screen never hangs
     const safetyTimeout = setTimeout(() => {
       setLoadingProgress(100);
       setStatusMessage("Aegis Quantum Nexus Synchronized!");
@@ -67,7 +68,6 @@ function App() {
     };
   }, []);
 
-  // When both iframes report loaded, immediately complete loading
   useEffect(() => {
     if (wayfarerReady && dockmindReady) {
       setLoadingProgress(100);
@@ -87,7 +87,6 @@ function App() {
         if (event.data.tab === 'chat') {
           setActiveTab('chat');
           
-          // Relay session selection to DockMind iframe
           if (dockmindRef.current && dockmindRef.current.contentWindow) {
             dockmindRef.current.contentWindow.postMessage({
               type: 'SELECT_SESSION',
@@ -143,14 +142,26 @@ function App() {
         </div>
       </div>
 
-      {/* Futuristic Floating Maximalist Navigation Dock (Replaces plain sidebar) */}
-      <NavigationDock 
-        activeTab={activeTab} 
-        onSelectTab={setActiveTab} 
-      />
+      {/* Screen 1: Initial Portal Launchpad (When first opened, shows ONLY the 2 big app choices) */}
+      {activeTab === null && (
+        <PortalLaunchpad 
+          onSelectApp={(app) => setActiveTab(app)}
+          wayfarerReady={wayfarerReady}
+          dockmindReady={dockmindReady}
+        />
+      )}
+
+      {/* Screen 2: Active App Workspace with Hidden Slide-out Nav Drawer */}
+      {activeTab !== null && (
+        <SlideNavDrawer 
+          activeTab={activeTab} 
+          onSelectTab={setActiveTab} 
+          onReturnHome={() => setActiveTab(null)}
+        />
+      )}
 
       {/* Main Fullscreen Workspace (Preloaded Iframes for instant tab switching) */}
-      <main className="omni-content-fullscreen">
+      <main className={`omni-content-fullscreen ${activeTab === null ? 'hidden-workspace' : ''}`}>
         {/* Wayfarer Iframe (Port 3000) */}
         <iframe 
           src={`http://${typeof window !== 'undefined' ? (window.location.hostname || 'localhost') : 'localhost'}:3000`} 
