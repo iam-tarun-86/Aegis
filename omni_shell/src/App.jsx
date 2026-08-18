@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { AegisLogo } from './components/AegisLogo';
+import { NavigationDock } from './components/NavigationDock';
 
 function App() {
   const [activeTab, setActiveTab] = useState('research');
@@ -7,9 +8,27 @@ function App() {
   const [dockmindReady, setDockmindReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(20);
-  const [statusMessage, setStatusMessage] = useState("Initializing Aegis Neural Subsystems...");
+  const [statusMessage, setStatusMessage] = useState("Initializing Aegis Quantum Neural Core...");
   
   const dockmindRef = useRef(null);
+
+  // Keyboard shortcut listener for instantaneous switching ([1] Wayfarer, [2] DockMind)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Don't trigger if user is typing in an active input/textarea
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        return;
+      }
+      if (e.key === '1') {
+        setActiveTab('research');
+      } else if (e.key === '2') {
+        setActiveTab('chat');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     // Step-by-step loading simulation / health polling
@@ -29,13 +48,13 @@ function App() {
     }, 1200);
 
     const messageTimer3 = setTimeout(() => {
-      setStatusMessage("Warming Vector Caches & Neural Handoff Bridge...");
+      setStatusMessage("Synchronizing Vector Embeddings & Neural Handoff Bridge...");
     }, 1800);
 
     // Max fallback safety timeout so loading screen never hangs
     const safetyTimeout = setTimeout(() => {
       setLoadingProgress(100);
-      setStatusMessage("All Subsystems Synchronized!");
+      setStatusMessage("Aegis Quantum Nexus Synchronized!");
       setTimeout(() => setIsLoading(false), 500);
     }, 3500);
 
@@ -89,12 +108,12 @@ function App() {
       <div className={`omni-splash-screen ${!isLoading ? 'fade-out' : ''}`}>
         <div className="splash-card">
           <div className="splash-logo">
-            <AegisLogo size={68} />
+            <AegisLogo size={82} />
             <div className="splash-pulse"></div>
           </div>
           
           <h1 className="splash-title">AEGIS</h1>
-          <p className="splash-subtitle">Autonomous Research & Document Intelligence</p>
+          <p className="splash-subtitle">Autonomous Research & Document Intelligence Nexus</p>
           
           <div className="splash-progress-bar-container">
             <div 
@@ -124,40 +143,14 @@ function App() {
         </div>
       </div>
 
-      {/* Sidebar */}
-      <aside className="omni-sidebar">
-        <div className="omni-logo">
-          <AegisLogo size={34} />
-          <div className="omni-logo-text">Aegis</div>
-        </div>
+      {/* Futuristic Floating Maximalist Navigation Dock (Replaces plain sidebar) */}
+      <NavigationDock 
+        activeTab={activeTab} 
+        onSelectTab={setActiveTab} 
+      />
 
-        <nav className="omni-nav">
-          <div 
-            className={`omni-nav-item ${activeTab === 'research' ? 'active' : ''}`}
-            onClick={() => setActiveTab('research')}
-          >
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            Deep Research
-          </div>
-          <div 
-            className={`omni-nav-item ${activeTab === 'chat' ? 'active' : ''}`}
-            onClick={() => setActiveTab('chat')}
-          >
-            <svg className="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-            Document Chat
-          </div>
-        </nav>
-
-        <div className="omni-status">
-          <div className="status-indicator">
-            <div className="status-dot"></div>
-            System Online
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content Area (Preloaded Iframes for instant tab switching) */}
-      <main className="omni-content">
+      {/* Main Fullscreen Workspace (Preloaded Iframes for instant tab switching) */}
+      <main className="omni-content-fullscreen">
         {/* Wayfarer Iframe (Port 3000) */}
         <iframe 
           src={`http://${typeof window !== 'undefined' ? (window.location.hostname || 'localhost') : 'localhost'}:3000`} 
